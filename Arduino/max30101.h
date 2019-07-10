@@ -54,7 +54,7 @@ namespace MAX30101{
     char* multi_led_mode[4];
     
     public:
-      void SampAve (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
+      void SetVal (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
       void SetVal (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t, char*[]);
   };
 

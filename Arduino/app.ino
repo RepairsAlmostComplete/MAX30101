@@ -45,8 +45,9 @@ void setup()
 
     Serial.println();
     Serial.println("TESTING CLASS");
-    
-    
+    MAX30101::Initialiser initOptions;
+    initOptions.SetVal(SAMP_AVE, FIFO_RO, ALMOST_FULL, SEN_MODE, ADC_RANGE, SAMP_RATE, LED_PULSE_WIDTH, multi_led_mode);
+
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
     while (!MAX30101::initialise(SAMP_AVE, FIFO_RO, ALMOST_FULL, SEN_MODE, ADC_RANGE, SAMP_RATE, LED_PULSE_WIDTH, multi_led_mode)) {
