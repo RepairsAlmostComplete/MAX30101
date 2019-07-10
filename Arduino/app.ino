@@ -1,0 +1,170 @@
+#include <Wire.h>
+#include "max30101.h"
+
+#define SAMP_AVE 1          // Sampling average (Pos Val: 1, 2, 4, 8, 16, 32)
+#define FIFO_RO 1           // Roll over on full (0 = OFF, 1 = ON)
+#define ALMOST_FULL 24      // Set almost full flag at x samples free (Pos Val: 17 - 32)
+#define SEN_MODE "MULTI"     // Set the sensor mode (Pos Val: HR, SPO2, MULTI)
+#define ADC_RANGE 4096      // SPO2 ADC range control (Pos Val: 2048, 4096, 8192, 16384)
+#define SAMP_RATE 100       // Sampling rate in Hz (Pos Val: 50, 100, 200, 400, 800, 1000, 1600, 3200)
+#define LED_PULSE_WIDTH 411 // LED Pulse Width, also indirectly sets the ADC resolution (Pos Val: 69Âµs (15 bits), 118Âµs (16 bits), 215Âµs (17 bits), 411Âµs (18 bits))
+#define MULTI_LED_SLOT1 "RED" // The led to be used with slot 1 in Multi LED mode
+#define MULTI_LED_SLOT2 "IR" // The led to be used with slot 2 in Multi LED mode
+#define MULTI_LED_SLOT3 "GREEN" // The led to be used with slot 3 in Multi LED mode
+#define MULTI_LED_SLOT4 "DISABLED" // The led to be used with slot 4 in Multi LED mode, set to DISABLED when not in use
+
+#define BIT(n,i) (n>>i&1) // Macro to get a specific bit of an integer
+
+//#define I2C_MULTIPLEX_ADDR 0x70 // MUX I2C Address // Not Required as we are using a single sensor
+#define NRCHAN 8
+// Number of Active Channels
+// #define RSTPIN 0            // Multiplex RST pin
+
+//char* multi_led_mode[] = {"RED", "IR", "GREEN", "DISABLED"};
+char* multi_led_mode[] = {MULTI_LED_SLOT1, MULTI_LED_SLOT2, MULTI_LED_SLOT3, MULTI_LED_SLOT4};
+
+unsigned long lastAnalog; // records last time analog-channel sampled
+
+uint32_t sampleNo[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t sampleTime[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t startLogging[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t analogSampNo = 0;
+
+void setup()
+{
+    Serial.begin(921600);
+    //Serial.begin(256000);
+
+    while(!Serial.available()){
+
+    }
+
+    //Begin I2C
+    Wire.begin(5, 4);
+    Wire.setClock(400000);
+
+    // Setup MAX PPG Sensor
+    Serial.print("Initialising PPG Sensor.... ");
+    while (!MAX30101::initialise(SAMP_AVE, FIFO_RO, ALMOST_FULL, SEN_MODE, ADC_RANGE, SAMP_RATE, LED_PULSE_WIDTH, multi_led_mode)) {
+    Serial.println("Failed, retrying ...");
+    delay(1000);
+    }
+    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+    Serial.println("Complete");
+
+    // Setup ADC
+    pinMode(A0, INPUT);
+    lastAnalog = millis();
+}
+
+void loop()
+{
+    uint8_t data2;
+    int c = 0;
+    // Using a double read to get both INTR STATUS as the above is invalid
+    // Chip appears to reset REG_INTR_STATUS_2 on reading REG_INTR_STATUS_1 and vice versa
+    Wire.beginTransmission(0x57);
+    Wire.write(REG_INTR_STATUS_2);
+    Wire.endTransmission();
+    Wire.requestFrom(0x57, 1);
+    //data = Wire.read();
+    data2 = Wire.read();
+    Wire.endTransmission();
+
+    //if (BIT(data, 7) == 1){ // If FIFO Buffer is almost full, collect data
+    //if (BIT(data, 6) == 1){ // If NewSample, collect data
+    String outSentence = "";
+    uint8_t readPtr;
+    uint8_t writePtr;
+    uint8_t overflowCtr;
+    uint32_t redLEDBuf;
+    uint32_t irLEDBuf;
+    uint32_t greenLEDBuf;
+    uint8_t dataAval;
+
+    /*MAX30101::read_reg(REG_FIFO_RD_PTR, &readPtr);
+      MAX30101::read_reg(REG_FIFO_WR_PTR, &writePtr);
+      MAX30101::read_reg(REG_OVF_COUNTER, &overflowCtr);*/
+
+    Wire.beginTransmission(0x57);
+    Wire.write(REG_FIFO_WR_PTR);
+    Wire.endTransmission();
+    Wire.requestFrom(0x57, 3);
+    writePtr = Wire.read();
+    overflowCtr = Wire.read();
+    readPtr = Wire.read();
+    Wire.endTransmission();
+
+    if (readPtr != writePtr) {
+      /*outSentence += "PH,";
+      outSentence += millis();
+      outSentence += ",";
+      outSentence += overflowCtr;
+      outSentence += ",";*/
+      if (readPtr < writePtr) {
+        dataAval = writePtr - readPtr;
+      } else {
+        dataAval = 32 - readPtr + writePtr;
+      }
+      /*outSentence += dataAval;
+      outSentence += "\r\n";*/
+      //Serial.print(outSentence);
+
+      if (dataAval == 1 && startLogging[c] == 0){
+        sampleTime[c] = millis();
+        startLogging[c] = 1;
+      }
+
+      // Send data
+      if (startLogging[c] == 1){
+        while (dataAval > 0) {
+          outSentence += "PL,";
+          sampleNo[c]++;          
+          outSentence += sampleNo[c];
+          outSentence += ",";
+          if (sampleNo[c] > 1){
+            sampleTime[c] += 10;
+          }
+          outSentence += sampleTime[c];
+          outSentence += ",";
+          MAX30101::read_fifo(&redLEDBuf, &irLEDBuf, &greenLEDBuf);
+          outSentence += redLEDBuf;
+          outSentence += ",";
+          outSentence += irLEDBuf;
+          outSentence += ",";
+          outSentence += greenLEDBuf;
+          outSentence += ",";
+          outSentence += overflowCtr;
+          outSentence += "\r\n";
+  
+          /*if(dataAval>1){
+            outSentence+=",";
+            } else {
+            outSentence+="\r\n";
+            }*/
+          dataAval--;
+        }
+      }
+      Serial.print(outSentence);
+    }
+
+    if (BIT(data2, 1) == 1) {   // If temperature conversion ended
+      uint8_t tempInt;
+      uint8_t tempFrac;
+      String outSentence = "";
+
+      MAX30101::read_reg(REG_TEMP_INTR, &tempInt);
+      MAX30101::read_reg(REG_TEMP_FRAC, &tempFrac);
+
+      /*outSentence += "PT,";
+      outSentence += millis();
+      outSentence += ",";
+      outSentence += tempInt;
+      outSentence += ",";
+      outSentence += tempFrac;
+      outSentence += "\r\n";
+      Serial.print(outSentence);*/
+
+      MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+    }
+}
