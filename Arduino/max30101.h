@@ -42,6 +42,22 @@ namespace MAX30101{
   #define REG_REV_ID 0xFE // Revision ID
   #define REG_PART_ID 0xFF // Part ID
 
+  class Initialiser
+  {
+    uint8_t samp_ave;
+    uint8_t fifo_rollover_en;
+    uint8_t fifo_a_full;
+    char* mode_ctrl;
+    uint8_t spo2_adc_rge;
+    uint8_t spo2_sr;
+    uint8_t led_pw;
+    char* multi_led_mode[4];
+    
+    public:
+      void SampAve (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
+      void SetVal (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t, char*[]);
+  };
+
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
   bool initialise(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[]);

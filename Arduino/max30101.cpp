@@ -57,6 +57,29 @@ namespace MAX30101{
       return true; // Need return value -GL
   }
 
+  void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW)
+  {
+    samp_ave = SAMP_AVE;
+    fifo_rollover_en = FIFO_ROLLOVER_EN;
+    fifo_a_full = FIFO_A_FULL;
+    mode_ctrl = MODE_CTRL;
+    spo2_adc_rge = SPO2_ADC_RGE;
+    spo2_sr = SPO2_SR;
+    led_pw = LED_PW;
+  }
+
+  void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[])
+  {
+    samp_ave = SAMP_AVE;
+    fifo_rollover_en = FIFO_ROLLOVER_EN;
+    fifo_a_full = FIFO_A_FULL;
+    mode_ctrl = MODE_CTRL;
+    spo2_adc_rge = SPO2_ADC_RGE;
+    spo2_sr = SPO2_SR;
+    led_pw = LED_PW;
+    memcpy(multi_led_mode, MULTI_LED_MODE, sizeof(multi_led_mode));
+  }
+
   /*
   * Initialise the MAX30101 sensor
   * Parameters:
@@ -66,6 +89,7 @@ namespace MAX30101{
   */
   bool initialise(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[])
   {
+    
     uint8_t partid; // Variable to store part ID check
     //Wire.begin(); // Setting up the Wire library to begin   - INIT OUTSIDE, or reset for SetClock feature -GL
 

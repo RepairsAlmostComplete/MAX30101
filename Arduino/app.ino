@@ -43,6 +43,10 @@ void setup()
     Wire.begin(5, 4);
     Wire.setClock(400000);
 
+    Serial.println();
+    Serial.println("TESTING CLASS");
+    
+    
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
     while (!MAX30101::initialise(SAMP_AVE, FIFO_RO, ALMOST_FULL, SEN_MODE, ADC_RANGE, SAMP_RATE, LED_PULSE_WIDTH, multi_led_mode)) {
