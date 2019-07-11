@@ -87,30 +87,20 @@ namespace MAX30101{
   };
 
   // Class to store the LED Data
-  class FIFOData
+  struct FIFOData
   {
     uint32_t slot1;
     uint32_t slot2;
     uint32_t slot3;
     uint32_t slot4;
-
-    public:
-      void Slot1(uint32_t);
-      void Slot2(uint32_t);
-      void Slot3(uint32_t);
-      void Slot4(uint32_t);
-
-      uint32_t Slot1();
-      uint32_t Slot2();
-      uint32_t Slot3();
-      uint32_t Slot4();
   };
 
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
   bool initialise(Initialiser initOptions);
   bool reset();
-  bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led);
+  //bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led);
+  bool read_fifo(FIFOData &pun_Data);
   uint8_t reg_fifo_config_val(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL);
   uint8_t reg_mode_config_val(char* MODE_CTRL);
   byte reg_multi_led_mode(char* SLOT1, char* SLOT2);

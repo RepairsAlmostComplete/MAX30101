@@ -205,6 +205,7 @@ namespace MAX30101{
   // *** End of functions for Initialiser Class ***
 
   // *** Start of functions for FIFOData Class ***
+  /*
   void MAX30101::FIFOData::Slot1(uint32_t data){
     slot1 = data;
   }
@@ -235,7 +236,7 @@ namespace MAX30101{
 
   uint32_t MAX30101::FIFOData::Slot4(){
     return slot4;
-  }
+  }*/
 
   /*
   * Initialise the MAX30101 sensor
@@ -307,15 +308,22 @@ namespace MAX30101{
   * Return value:
   *   true on success
   */
-  bool read_fifo(uint32_t *pun_slot1, uint32_t *pun_slot2, uint32_t *pun_slot3)
+  bool read_fifo(MAX30101::FIFOData &pun_Data) // FIFOData passed by reference, rather than pointer
   {
-    Serial.printf("Slots in use: %i\n", slotsInUse);
 
 //    uint32_t un_temp;
 //    uint8_t uch_temp;
-    *pun_slot1 = 0;
+    /* *pun_slot1 = 0;
     *pun_slot2 = 0;
     *pun_slot3 = 0;
+    */
+
+    pun_Data.slot1 = 0;
+    pun_Data.slot2 = 0;
+    pun_Data.slot3 = 0;
+    pun_Data.slot4 = 0;
+
+    
 //    MAX30101::read_reg(REG_INTR_STATUS_1, &uch_temp);  // No idea why you're doing this? INT STATUS is read already, reading again may clear interrupts again!!! -GL
 //    MAX30101::read_reg(REG_INTR_STATUS_2, &uch_temp);
 
@@ -345,16 +353,16 @@ namespace MAX30101{
     *pun_ir_led += un_temp; // Add that data to pun_ir_led
 */
     if (slotsInUse > 0){
-      *pun_slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      pun_Data.slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     if (slotsInUse > 1){
-      *pun_slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
+      pun_Data.slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
     }
     if (slotsInUse > 2){
-      *pun_slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      pun_Data.slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     if (slotsInUse > 3){
-      //*pun_slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      pun_Data.slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     
     Wire.endTransmission();

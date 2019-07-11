@@ -55,9 +55,6 @@ void setup()
     initOptions.MultiLEDSlot3(MULTI_LED_SLOT3);
     initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
 
-    Serial.print("Slots In Use: ");
-    Serial.println(initOptions.SlotsInUse());
-
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
     while (!MAX30101::initialise(initOptions)) {
@@ -92,9 +89,10 @@ void loop()
     uint8_t readPtr;
     uint8_t writePtr;
     uint8_t overflowCtr;
-    uint32_t redLEDBuf;
-    uint32_t irLEDBuf;
-    uint32_t greenLEDBuf;
+    //uint32_t redLEDBuf;
+    //uint32_t irLEDBuf;
+    //uint32_t greenLEDBuf;
+    MAX30101::FIFOData ledDataBuf;
     uint8_t dataAval;
 
     /*MAX30101::read_reg(REG_FIFO_RD_PTR, &readPtr);
@@ -142,12 +140,14 @@ void loop()
           }
           outSentence += sampleTime[c];
           outSentence += ",";
-          MAX30101::read_fifo(&redLEDBuf, &irLEDBuf, &greenLEDBuf);
-          outSentence += redLEDBuf;
+          MAX30101::read_fifo(ledDataBuf);
+          outSentence += ledDataBuf.slot1;
           outSentence += ",";
-          outSentence += irLEDBuf;
+          outSentence += ledDataBuf.slot2;
           outSentence += ",";
-          outSentence += greenLEDBuf;
+          outSentence += ledDataBuf.slot3;
+          outSentence += ",";
+          outSentence += ledDataBuf.slot4;
           outSentence += ",";
           outSentence += overflowCtr;
           outSentence += "\r\n";
