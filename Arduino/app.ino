@@ -2,12 +2,12 @@
 #include "max30101.h"
 
 #define SAMP_AVE 1          // Sampling average (Pos Val: 1, 2, 4, 8, 16, 32)
-#define FIFO_RO 1           // Roll over on full (0 = OFF, 1 = ON)
+#define FIFO_RO true        // Roll over on full (false = OFF, true = ON)
 #define ALMOST_FULL 24      // Set almost full flag at x samples free (Pos Val: 17 - 32)
 #define SEN_MODE "MULTI"     // Set the sensor mode (Pos Val: HR, SPO2, MULTI)
 #define ADC_RANGE 4096      // SPO2 ADC range control (Pos Val: 2048, 4096, 8192, 16384)
 #define SAMP_RATE 100       // Sampling rate in Hz (Pos Val: 50, 100, 200, 400, 800, 1000, 1600, 3200)
-#define LED_PULSE_WIDTH 411 // LED Pulse Width, also indirectly sets the ADC resolution (Pos Val: 69Âµs (15 bits), 118Âµs (16 bits), 215Âµs (17 bits), 411Âµs (18 bits))
+#define LED_PULSE_WIDTH 411 // LED Pulse Width, also indirectly sets the ADC resolution (Pos Val: 69µs (15 bits), 118µs (16 bits), 215µs (17 bits), 411µs (18 bits))
 #define MULTI_LED_SLOT1 "RED" // The led to be used with slot 1 in Multi LED mode
 #define MULTI_LED_SLOT2 "IR" // The led to be used with slot 2 in Multi LED mode
 #define MULTI_LED_SLOT3 "GREEN" // The led to be used with slot 3 in Multi LED mode

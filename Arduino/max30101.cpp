@@ -1,14 +1,17 @@
 /*
  * File:   MAX30101.h
- * Author: meimcounting
+ * Author: Repairs Almost Complete
  *
- * Created on 25 July 2018, 5:57 PM
+ * Created on 11 July 2019, 5:57 PM
  */
 
 //#include <arduino.h>
 #include <Wire.h>
 #include "max30101.h"
 
+/*
+* Namespace for MAX30101
+*/
 namespace MAX30101{ 
 
   uint8_t slotsInUse; // Stores the number of slots in use so that we know how many to process data for
@@ -16,11 +19,10 @@ namespace MAX30101{
   /*
   * Write a value to the MAX30101 registers
   * Parameters:
-  *   uch_addr    in    register Address
-  *   uch_data    in    register data
-  *
+  * - uint8_t uch_addr [register Address]
+  * - uint8_t uch_data [register data]
   * Return value:
-  *   true on success
+  * - true on success
   */
   bool write_reg(uint8_t uch_addr, uint8_t uch_data)
   {
@@ -38,11 +40,10 @@ namespace MAX30101{
   /*
   * Read a value from the MAX30101 registers
   * Parameters:
-  *   uch_addr    in    register Address
-  *   uch_data    out   register data
-  *
+  * - uint8_t uch_addr [register Address]
+  * - uint8_t uch_data [register data]
   * Return value:
-  *   true on success
+  * - true on success
   */
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data)
   {
@@ -59,143 +60,402 @@ namespace MAX30101{
       return true; // Need return value -GL
   }
 
-  /*void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW)
-  {
-    samp_ave = SAMP_AVE;
-    fifo_rollover_en = FIFO_ROLLOVER_EN;
-    fifo_a_full = FIFO_A_FULL;
-    mode_ctrl = MODE_CTRL;
-    spo2_adc_rge = SPO2_ADC_RGE;
-    spo2_sr = SPO2_SR;
-    led_pw = LED_PW;
-  }
-
-  void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[])
-  {
-    samp_ave = SAMP_AVE;
-    fifo_rollover_en = FIFO_ROLLOVER_EN;
-    fifo_a_full = FIFO_A_FULL;
-    mode_ctrl = MODE_CTRL;
-    spo2_adc_rge = SPO2_ADC_RGE;
-    spo2_sr = SPO2_SR;
-    led_pw = LED_PW;
-    memcpy(multi_led_mode, MULTI_LED_MODE, sizeof(multi_led_mode));
-  }*/
-
   // *** Start of functions for Initialiser Class ***
+
+  /*
+  * Sets the Sampling Average initialisation option
+  * Parameters:
+  * - uint8_t value [Number of samples to average (1, 2, 3, 8, 16, 32)]
+  * Return value:
+  * - void
+  */
   void MAX30101::Initialiser::SampAvg(uint8_t value){
-    samp_avg = value;
+    switch (value) {
+      case 1: // No averaging
+        fifo_config += B00000000;
+        break;
+      case 2: // 2 samples averaged per FIFO sample
+        fifo_config += B00100000;
+        break;
+      case 4: // 4 samples averaged per FIFO sample
+        fifo_config += B01000000;
+        break;
+      case 8: // 8 samples averaged per FIFO sample
+        fifo_config += B01100000;
+        break;
+      case 16: // 16 samples averaged per FIFO sample
+        fifo_config += B10000000;
+        break;
+      case 32: // 32 samples averaged per FIFO sample``
+        fifo_config += B10100000;
+        break;
+      default: // No averaging
+        fifo_config += B00000000;
+        break;
+    }
   }
 
-  void MAX30101::Initialiser::FIFORollover(uint8_t value){
-    fifo_rollover = value;
+  /*
+  * Sets the FIFO Rollover initialisation option
+  * Parameters:
+  * - bool value [true = on, false = off]
+  * Return value:
+  * - void
+  * Indicates if the buffer should rollover if full.
+  */
+  void MAX30101::Initialiser::FIFORollover(bool value){
+    if (value == true){
+      fifo_config += B00000000; // FIFO Rolls on Full Disabled
+    } else {
+      fifo_config += B00010000; // FIFO Rolls on Full Enabled
+    }
   }
 
+  /*
+  * Sets the FIFO Buffer Full initialisation option
+  * Parameters:
+  * - uint8_t value [17 - 32]
+  * Return value:
+  * - void
+  * Sets the almost full flag at x samples free.
+  */
   void MAX30101::Initialiser::FIFOBuffFull(uint8_t value){
-    fifo_buff_full = value;
+    switch (value) { // FIFO Almost Full Value - Returns full when it has x unread samples
+      case 32: // 32 unread samples (i.e. full FIFO) or 0 empty data slots
+        fifo_config += B00000000;
+        break;
+      case 31: // 31 unread samples or 1 empty data slots
+        fifo_config += B00000001;
+        break;
+      case 30: // 30 unread samples (2 empty data slots)
+        fifo_config += B00000010;
+        break;
+      case 29: // 29 unread samples (3 empty data slots)
+        fifo_config += B00000011;
+        break;
+      case 28: // 28 unread samples (4 empty data slots)
+        fifo_config += B00000100;
+        break;
+      case 27: // 27 unread samples (5 empty data slots)
+        fifo_config += B00000101;
+        break;
+      case 26: // 26 unread samples (6 empry data slots)
+        fifo_config += B00000110;
+        break;
+      case 25: // 25 unread samples (7 empty data slots)
+        fifo_config += B00000111;
+        break;
+      case 24: // 24 unread samples (8 empty data slots)
+        fifo_config += B00001000;
+        break;
+      case 23: // 23 unread samples (9 empty data slots)
+        fifo_config += B00001001;
+        break;
+      case 22: // 22 unread samples (10 empty data slots)
+        fifo_config += B00001010;
+        break;
+      case 21: // 21 unread samples (11 empty data slots)
+        fifo_config += B00001011;
+        break;
+      case 20: // 20 unread samples (12 empty data slots)
+        fifo_config += B00001100;
+        break;
+      case 19: // 19 unread samples (13 empty data slots)
+        fifo_config += B00001101;
+        break;
+      case 18: // 18 unread samples (14 empty data slots)
+        fifo_config += B00001110;
+        break;
+      case 17: // 17 unread samples (15 empty data slots)
+        fifo_config += B00001111;
+        break;
+      default: // 32 unread samples (0 emtpry data slots)
+        fifo_config += B00000000;
+        break;
+    }
   }
 
+  /*
+  * Sets the Mode Control initialisation option
+  * Parameters:
+  * - char* mode [HR, SPO2, MULTI]
+  * Return value:
+  * - void
+  * Sets the sensor mode to one of the following values:
+  * - HR = Heart Rate mode, uses red LED only
+  * - SPO2 = Pulse oximeter mode, uses red and IR LEDs
+  * - MULTI = Multi led mode, configurable via MultiLEDCtrl1/2
+  */
   void MAX30101::Initialiser::ModeCtrl(char* mode){
-    mode_ctrl = mode;
+    mode_ctrl = B00000000;
+
+    if (mode == "HR"){
+      mode_ctrl += MODE_HR;  // HR mode only
+    } else if (mode == "SPO2") {
+      mode_ctrl += MODE_SPO2;  // SPO2 mode only
+    } else if (mode == "MULTI") {
+      mode_ctrl += MODE_MULTI;  // Multi mode (Red, IR and Green)
+    } else {
+      mode_ctrl += MODE_SPO2; // Default to SPO2 mode
+    }
   }
 
+  /*
+  * Sets the SPO2 ADC Range initialisation option
+  * Parameters:
+  * - uint8_t value [2048, 4096, 8192, 16384]
+  * Return value:
+  * - void
+  * Sets the ADC range in bits.
+  */
   void MAX30101::Initialiser::SPO2ADCRange(uint8_t value){
-    spo2_adc_range = value;
+    switch (value){
+      case 2048:
+        spo2_config += B00000000; // LSB Size 7.81pA, Full Scale 2048nA
+        break;
+      case 4096:
+        spo2_config += B00100000; // LSB Size 15.63pA, Full Scale 4096nA
+        break;
+      case 8192:
+        spo2_config += B01000000; // LSB Size 31.25pA, Full Scale 8192nA
+        break;
+      case 16384:
+        spo2_config += B01100000; // LSB Size 62.5pA, Full Scale 16384nA
+        break;
+      default:
+        spo2_config += B00100000; // Default LSB Size 15.63pA, Full Scale 4096nA
+        break;
+    }
   }
 
+  /*
+  * Sets the Sample Rate initialisation option
+  * Parameters:
+  * - uint8_t value [50, 100, 200, 400, 800, 1000, 1600, 3200]
+  * Return value:
+  * - void
+  * Sets the sample rate in Hz.
+  * NOTE: Higher sample rates requre the pulse width to be changed.
+  * See documentation for more information.
+  */
   void MAX30101::Initialiser::SPO2SampRate(uint8_t value){
-    spo2_sample_rate = value;
+    switch (value){
+      case 50:
+        spo2_config += B00000000; // 50Hz (50 Samples per second)
+        break;
+      case 100:
+        spo2_config += B00000100; // 100Hz (100 Samples per second)
+        break;
+      case 200:
+        spo2_config += B00001000; // 200Hz (200 Samples per second)
+        break;
+      case 400:
+        spo2_config += B00001100; // 400Hz (400 Samples per second)
+        break;
+      case 800:
+        spo2_config += B00010000; // 800Hz (800 Samples per second)
+        break;
+      case 1000:
+        spo2_config += B00010100; // 1000Hz (1000 Samples per second)
+        break;
+      case 1600:
+        spo2_config += B00011000; // 1500Hz (1600 Samples per second)
+        break;
+      case 3200:
+        spo2_config += B00011100; // 3200Hz (3200 Samples per second)
+        break;
+      default:
+        spo2_config += B00000100; // 100Hz (100 Samples per second)
+        break;
+    }
   }
 
+  /*
+  * Sets the LED Pulse Width initialisation option
+  * Parameters:
+  * - uint8_t value [69, 118, 215, 411]
+  * Return value:
+  * - void
+  * Sets the pulse width in µs.
+  * NOTE: Also indirectly sets the ADC Resolution
+  * - 69µs = 15 bits
+  * - 118µs = 16 bits
+  * - 215µs = 17 bits
+  * - 411µs = 18 bits
+  */
   void MAX30101::Initialiser::LEDPulseWidth(uint8_t value){
-    led_pulse_width = value;
+    switch (value) {
+      case 15:
+        spo2_config += B00000000; // 15 bits ADC Resolution with a pulse width of 69µs
+        break;
+      case 16:
+        spo2_config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
+        break;
+      case 17:
+        spo2_config += B00000010; // 17 bits ADC Resolution with a pulse width of 215µs
+        break;
+      case 18:
+        spo2_config += B00000011; // 18 bits ADC Resolution with a pulse width of 411µs
+        break;
+      default:
+        spo2_config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
+        break;
+    }
   }
 
+  /*
+  * Selects the LED for slot 1 in Multi LED mode
+  * Parameters:
+  * - uint8_t slot1 [RED, IR, GREEN, DISABLED]
+  * Return value:
+  * - void
+  * Not required where HR and SPO2 selected for Mode Control.
+  * NOTE: Slots should be filled from slot1 to slot4, disabled
+  * slots should be at the end of available slots.
+  */
   void MAX30101::Initialiser::MultiLEDSlot1(char* slot1){
-    mlslot1 = slot1;
+    mlslot1 = led_mode_values(slot1);
   }
 
+  /*
+  * Selects the LED for slot 2 in Multi LED mode
+  * Parameters:
+  * - uint8_t slot2 [RED, IR, GREEN, DISABLED]
+  * Return value:
+  * - void
+  * Not required where HR and SPO2 selected for Mode Control.
+  * NOTE: Slots should be filled from slot1 to slot4, disabled
+  * slots should be at the end of available slots.
+  */
   void MAX30101::Initialiser::MultiLEDSlot2(char* slot2){
-    mlslot2 = slot2;
+    mlslot2 = led_mode_values(slot2);
   }
 
+  /*
+  * Selects the LED for slot 3 in Multi LED mode
+  * Parameters:
+  * - uint8_t slot3 [RED, IR, GREEN, DISABLED]
+  * Return value:
+  * - void
+  * Not required where HR and SPO2 selected for Mode Control.
+  * NOTE: Slots should be filled from slot1 to slot4, disabled
+  * slots should be at the end of available slots.
+  */
   void MAX30101::Initialiser::MultiLEDSlot3(char* slot3){
-    mlslot3 = slot3;
+    mlslot3 = led_mode_values(slot3);
   }
 
+  /*
+  * Selects the LED for slot 4 in Multi LED mode
+  * Parameters:
+  * - uint8_t slot4 [RED, IR, GREEN, DISABLED]
+  * Return value:
+  * - void
+  * Not required where HR and SPO2 selected for Mode Control.
+  * NOTE: Slots should be filled from slot1 to slot4, disabled
+  * slots should be at the end of available slots.
+  */
   void MAX30101::Initialiser::MultiLEDSlot4(char* slot4){
-    mlslot4 = slot4;
+    mlslot4 = led_mode_values(slot4);
   }
 
-  uint8_t MAX30101::Initialiser::SampAvg(){
-    return samp_avg;
+  /*
+  * Returns the FIFOConfig value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::FIFOConfig(){
+    return fifo_config;
   }
 
-  uint8_t MAX30101::Initialiser::FIFORollover(){
-    return fifo_rollover;
-  }
-
-  uint8_t MAX30101::Initialiser::FIFOBuffFull(){
-    return fifo_buff_full;
-  }
-
-  char* MAX30101::Initialiser::ModeCtrl(){
+  /*
+  * Returns the ModeCtrl value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::ModeCtrl(){
     return mode_ctrl;
   }
 
-  uint8_t MAX30101::Initialiser::SPO2ADCRange(){
-    return spo2_adc_range;
+  /*
+  * Returns the SPO2Config value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::SPO2Config(){
+    return spo2_config;
   }
 
-  uint8_t MAX30101::Initialiser::SPO2SampRate(){
-    return spo2_sample_rate;
+  /*
+  * Returns the MultiLEDCtrl1 value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::MultiLEDCtrl1(){
+    byte multiLEDCtrl1 = mlslot1;
+    
+    // Add in the LED mode for the second slot
+    multiLEDCtrl1 += mlslot2 << 4;
+
+    return multiLEDCtrl1;
   }
 
-  uint8_t MAX30101::Initialiser::LEDPulseWidth(){
-    return led_pulse_width;
+  /*
+  * Returns the MultiLEDCtrl2 value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::MultiLEDCtrl2(){
+    byte multiLEDCtrl2 = mlslot3;
+    
+    // Add in the LED mode for the second slot
+    multiLEDCtrl2 += mlslot4 << 4;
+
+    return multiLEDCtrl2;
   }
 
-  char* MAX30101::Initialiser::MultiLEDSlot1(){
-    return mlslot1;
-  }
-
-  char* MAX30101::Initialiser::MultiLEDSlot2(){
-    return mlslot2;
-  }
-
-  char* MAX30101::Initialiser::MultiLEDSlot3(){
-    return mlslot3;
-  }
-
-  char* MAX30101::Initialiser::MultiLEDSlot4(){
-    return mlslot4;
-  }
-
+  /*
+  * Returns the number of Multi LED Control slots in use
+  * Parameters:
+  * - none
+  * Return value:
+  * - unit8_t
+  */
   uint8_t MAX30101::Initialiser::SlotsInUse(){ // Required so that we know how much data to collect
     uint8_t slotsInUse = 0;
 
-    if (mode_ctrl == "HR"){ // Only one slot is in use (Slot1: RED)
+    if (mode_ctrl == MODE_HR){ // HR Mode: Only one slot is in use (Slot1: RED)
       slotsInUse = 1;
     }
 
-    if (mode_ctrl == "SPO2"){ // Two slots are in use (Slot1: RED, Slot2: IR)
+    if (mode_ctrl == MODE_SPO2){ // SPO2 Mode: Two slots are in use (Slot1: RED, Slot2: IR)
       slotsInUse = 2;
     }
 
-    if (mode_ctrl == "MULTI"){ // Multi can be different configuration, so needs to be calculated
-      if (mlslot1 != "DISABLED"){
+    if (mode_ctrl == MODE_MULTI){ // Multi Mode: Multi can be different configuration, so needs to be calculated
+      if (mlslot1 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot2 != "DISABLED"){
+      if (mlslot2 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot3 != "DISABLED"){
+      if (mlslot3 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot4 != "DISABLED"){
+      if (mlslot4 != ML_DISABLED){
         slotsInUse ++;
       }
     }
@@ -204,46 +464,13 @@ namespace MAX30101{
   }
   // *** End of functions for Initialiser Class ***
 
-  // *** Start of functions for FIFOData Class ***
-  /*
-  void MAX30101::FIFOData::Slot1(uint32_t data){
-    slot1 = data;
-  }
-
-  void MAX30101::FIFOData::Slot2(uint32_t data){
-    slot2 = data;
-  }
-
-  void MAX30101::FIFOData::Slot3(uint32_t data){
-    slot3 = data;
-  }
-
-  void MAX30101::FIFOData::Slot4(uint32_t data){
-    slot4 = data;
-  }
-
-  uint32_t MAX30101::FIFOData::Slot1(){
-    return slot1;
-  }
-  
-  uint32_t MAX30101::FIFOData::Slot2(){
-    return slot2;
-  }
-
-  uint32_t MAX30101::FIFOData::Slot3(){
-    return slot3;
-  }
-
-  uint32_t MAX30101::FIFOData::Slot4(){
-    return slot4;
-  }*/
-
   /*
   * Initialise the MAX30101 sensor
   * Parameters:
-  *
+  * - Initialiser initOptions [Initialiser Object]
   * Return value:
-  *   true on success
+  * - true on success
+  * Initialises the MAX30101 sensor as per the passed in options via the Initialiser object.
   */
   bool initialise(Initialiser initOptions)
   {
@@ -257,11 +484,11 @@ namespace MAX30101{
     MAX30101::read_reg(REG_PART_ID, &partid);
     if(partid!=0x15)
       return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, reg_mode_config_val(initOptions.ModeCtrl()))) // Values calculated from constants passed to the function (MODE_CTRL)
+    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.ModeCtrl())) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, reg_multi_led_mode(initOptions.MultiLEDSlot1(), initOptions.MultiLEDSlot2())))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, initOptions.MultiLEDCtrl1()))
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, reg_multi_led_mode(initOptions.MultiLEDSlot3(), initOptions.MultiLEDSlot4())))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, initOptions.MultiLEDCtrl2()))
       return false;
     if(!MAX30101::write_reg(REG_FIFO_WR_PTR, 0x00)) //FIFO_WR_PTR[4:0] - Clearing the write pointer
       return false;
@@ -269,9 +496,9 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_FIFO_RD_PTR, 0x00)) //FIFO_RD_PRT[4:0] - Clearing the read pointer
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_CONFIG, reg_fifo_config_val(initOptions.SampAvg(), initOptions.FIFORollover(), initOptions.FIFOBuffFull()))) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
+    if(!MAX30101::write_reg(REG_FIFO_CONFIG, initOptions.FIFOConfig())) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
       return false;
-    if(!MAX30101::write_reg(REG_SPO2_CONFIG, reg_spo2_config_val(initOptions.SPO2ADCRange(), initOptions.SPO2SampRate(), initOptions.LEDPulseWidth()))) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
+    if(!MAX30101::write_reg(REG_SPO2_CONFIG, initOptions.SPO2Config())) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
       return false;
     if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
@@ -300,32 +527,19 @@ namespace MAX30101{
   }
 
   /*
-  * Read a value from the MAX30101 registers
+  * Read data from the MAX30101 FIFO buffer register
   * Parameters:
-  *   *pun_red_led   out   red led data pointer
-  *   *pun_ir_led    out   ir led data pointer
-  *
+  * - FIFOData  &pun_Data [FIFOData Object]
   * Return value:
-  *   true on success
+  * - bool [true on success]
   */
   bool read_fifo(MAX30101::FIFOData &pun_Data) // FIFOData passed by reference, rather than pointer
   {
-
-//    uint32_t un_temp;
-//    uint8_t uch_temp;
-    /* *pun_slot1 = 0;
-    *pun_slot2 = 0;
-    *pun_slot3 = 0;
-    */
 
     pun_Data.slot1 = 0;
     pun_Data.slot2 = 0;
     pun_Data.slot3 = 0;
     pun_Data.slot4 = 0;
-
-    
-//    MAX30101::read_reg(REG_INTR_STATUS_1, &uch_temp);  // No idea why you're doing this? INT STATUS is read already, reading again may clear interrupts again!!! -GL
-//    MAX30101::read_reg(REG_INTR_STATUS_2, &uch_temp);
 
     Wire.beginTransmission(I2C_WRITE_ADDR);
     if(!Wire.write(byte(REG_FIFO_DATA)))
@@ -334,276 +548,53 @@ namespace MAX30101{
     if(!Wire.requestFrom(I2C_WRITE_ADDR, 9))
       return false;
 
-/*    un_temp = Wire.read(); // Read the first byte
-    un_temp <<= 16; // Bitshift the data to the left 16 places
-    *pun_red_led += un_temp; // Add that data to pun_red_led
-    un_temp = Wire.read(); // Read the next byte
-    un_temp <<= 8; // Bitshift the data to the left 8 places
-    *pun_red_led += un_temp; // Add that data to pun_red_led
-    un_temp = Wire.read(); // Read the next byte
-    *pun_red_led += un_temp; // Add that data to pun_red_led
-
-    un_temp = Wire.read(); // Read the first byte
-    un_temp <<= 16; // Bitshift the data to the left 16 places
-    *pun_ir_led += un_temp; // Add that data to pun_ir_led
-    un_temp = Wire.read(); // Read the next byte
-    un_temp <<= 8; // Bitshift the data to the left 8 places
-    *pun_ir_led += un_temp; // Add that data to pun_ir_led
-    un_temp = Wire.read(); // Read the next byte
-    *pun_ir_led += un_temp; // Add that data to pun_ir_led
-*/
-    if (slotsInUse > 0){
+    if (slotsInUse > 0){ // Read data for the first LED slot
       pun_Data.slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
-    if (slotsInUse > 1){
+    if (slotsInUse > 1){ // Read data for the second LED slot
       pun_Data.slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
     }
-    if (slotsInUse > 2){
+    if (slotsInUse > 2){ // Read data for the third LED slot
       pun_Data.slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
-    if (slotsInUse > 3){
+    if (slotsInUse > 3){ // Read data for the fourth LED slot
       pun_Data.slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     
     Wire.endTransmission();
-
-//    *pun_red_led &= 0x03FFFF; // Apply mask MSB [23:18]
-//    *pun_ir_led &= 0x03FFFF; // Apply mask MSB [23:18]
 
     return true;
 
   }
 
   /*
-  * Configure the REG_FIFO_CONFIG parameters as a byte from supplied text
+  * Returns the byte value for the requested LED mode
   * Parameters:
-  *
+  * - char* LED_MODE [LED Mode to set]
   * Return value:
-  *   true on success
+  * - byte
   */
-  uint8_t reg_fifo_config_val(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL){
-
-    byte b_temp;
-
-    switch (SMP_AVE) {
-      case 1: // No averaging
-        b_temp = B00000000;
-        break;
-      case 2: // 2 samples averaged per FIFO sample
-        b_temp = B00100000;
-        break;
-      case 4: // 4 samples averaged per FIFO sample
-        b_temp = B01000000;
-        break;
-      case 8: // 8 samples averaged per FIFO sample
-        b_temp = B01100000;
-        break;
-      case 16: // 16 samples averaged per FIFO sample
-        b_temp = B10000000;
-        break;
-      case 32: // 32 samples averaged per FIFO sample``
-        b_temp = B10100000;
-        break;
-      default: // No averaging
-        b_temp = B00000000;
-        break;
-    }
-
-    if (FIFO_ROLLOVER_EN == 0){
-      b_temp += B00000000; // FIFO Rolls on Full Disabled
-    } else {
-      b_temp += B00010000; // FIFO Rolls on Full Enabled
-    }
-
-    switch (FIFO_A_FULL) { // FIFO Almost Full Value - Returns full when it has x unread samples
-      case 32: // 32 unread samples (i.e. full FIFO) or 0 empty data slots
-        b_temp += B00000000;
-        break;
-      case 31: // 31 unread samples or 1 empty data slots
-        b_temp += B00000001;
-        break;
-      case 30: // 30 unread samples (2 empty data slots)
-        b_temp += B00000010;
-        break;
-      case 29: // 29 unread samples (3 empty data slots)
-        b_temp += B00000011;
-        break;
-      case 28: // 28 unread samples (4 empty data slots)
-        b_temp += B00000100;
-        break;
-      case 27: // 27 unread samples (5 empty data slots)
-        b_temp += B00000101;
-        break;
-      case 26: // 26 unread samples (6 empry data slots)
-        b_temp += B00000110;
-        break;
-      case 25: // 25 unread samples (7 empty data slots)
-        b_temp += B00000111;
-        break;
-      case 24: // 24 unread samples (8 empty data slots)
-        b_temp += B00001000;
-        break;
-      case 23: // 23 unread samples (9 empty data slots)
-        b_temp += B00001001;
-        break;
-      case 22: // 22 unread samples (10 empty data slots)
-        b_temp += B00001010;
-        break;
-      case 21: // 21 unread samples (11 empty data slots)
-        b_temp += B00001011;
-        break;
-      case 20: // 20 unread samples (12 empty data slots)
-        b_temp += B00001100;
-        break;
-      case 19: // 19 unread samples (13 empty data slots)
-        b_temp += B00001101;
-        break;
-      case 18: // 18 unread samples (14 empty data slots)
-        b_temp += B00001110;
-        break;
-      case 17: // 17 unread samples (15 empty data slots)
-        b_temp += B00001111;
-        break;
-      default: // 32 unread samples (0 emtpry data slots)
-        b_temp += B00000000;
-        break;
-    }
-
-    return b_temp;
-  }
-
-  uint8_t reg_mode_config_val(char* MODE_CTRL){
-    byte b_temp;
-
-    b_temp = B00000000;
-
-    if (MODE_CTRL == "HR"){
-      b_temp += B00000010;  // HR mode only
-    } else if (MODE_CTRL == "SPO2") {
-      b_temp += B00000011;  // SPO2 mode only
-    } else if (MODE_CTRL == "MULTI") {
-      b_temp += B00000111;  // Multi mode (Red, IR and Green)
-    } else {
-      b_temp += B00000011;
-    }
-
-    return b_temp;
-  }
-
-  // Returns the byte value for the LED mode requested
   byte led_mode_values(char* LED_MODE){
     
     if (LED_MODE == "DISABLED"){
-      return B000;
+      return ML_DISABLED;
     } else if (LED_MODE == "RED"){
-      return B001;
+      return ML_RED;
     } else if (LED_MODE == "IR" ){
-      return B010;
+      return ML_IR;
     } else if (LED_MODE == "GREEN"){
-      return B011;
+      return ML_GREEN;
     } else if (LED_MODE = "NONE"){
-      return B100;
+      return ML_NONE;
     } else if (LED_MODE = "PILOT_RED"){
-      return B101;
+      return ML_PILOT_RED;
     } else if (LED_MODE = "PILOT_IR"){
-      return B110;
-    } else if (LED_MODE = "PILOT_RED"){
-      return B111;
+      return ML_PILOT_IR;
+    } else if (LED_MODE = "PILOT_GREEN"){
+      return ML_PILOT_GREEN;
     }
     
     return B000;
   }
-
-  // Used setup multi-LED mode, four slots over two registers, therefore two slots per register
-  byte reg_multi_led_mode(char* SLOT1, char* SLOT2)
-  {
-    byte b_temp;
-
-    b_temp = B00000000;
-
-    // Get the LED mode and bit shift to the left four places for the first slot
-    b_temp = led_mode_values(SLOT1);
-    
-    // Add in the LED mode for the second slot
-    b_temp += led_mode_values(SLOT2) << 4;
-
-    return b_temp;
-  }
-
-  uint8_t reg_spo2_config_val(uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW ){
-    byte b_temp;
-
-    switch (SPO2_ADC_RGE){
-      case 2048:
-        b_temp += B00000000; // LSB Size 7.81pA, Full Scale 2048nA
-        break;
-      case 4096:
-        b_temp += B00100000; // LSB Size 15.63pA, Full Scale 4096nA
-        break;
-      case 8192:
-        b_temp += B01000000; // LSB Size 31.25pA, Full Scale 8192nA
-        break;
-      case 16384:
-        b_temp += B01100000; // LSB Size 62.5pA, Full Scale 16384nA
-        break;
-      default:
-        b_temp += B00100000; // Default LSB Size 15.63pA, Full Scale 4096nA
-        break;
-    }
-
-    switch (SPO2_SR){
-      case 50:
-        b_temp += B00000000; // 50Hz (50 Samples per second)
-        break;
-      case 100:
-        b_temp += B00000100; // 100Hz (100 Samples per second)
-        break;
-      case 200:
-        b_temp += B00001000; // 200Hz (200 Samples per second)
-        break;
-      case 400:
-        b_temp += B00001100; // 400Hz (400 Samples per second)
-        break;
-      case 800:
-        b_temp += B00010000; // 800Hz (800 Samples per second)
-        break;
-      case 1000:
-        b_temp += B00010100; // 1000Hz (1000 Samples per second)
-        break;
-      case 1600:
-        b_temp += B00011000; // 1500Hz (1600 Samples per second)
-        break;
-      case 3200:
-        b_temp += B00011100; // 3200Hz (3200 Samples per second)
-        break;
-      default:
-        b_temp += B00000100; // 100Hz (100 Samples per second)
-        break;
-    }
-
-    switch (LED_PW) {
-      case 15:
-        b_temp += B00000000; // 15 bits ADC Resolution with a pulse width of 69µs
-        break;
-      case 16:
-        b_temp += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
-        break;
-      case 17:
-        b_temp += B00000010; // 17 bits ADC Resolution with a pulse width of 215µs
-        break;
-      case 18:
-        b_temp += B00000011; // 18 bits ADC Resolution with a pulse width of 411µs
-        break;
-      default:
-        b_temp += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
-        break;
-    }
-
-    // ****** DEBUG CODE - REMOVE *******
-
-    return b_temp;
-
-  }
-
 
 }

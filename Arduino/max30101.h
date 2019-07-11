@@ -12,11 +12,11 @@
 #include <Wire.h>
 
 namespace MAX30101{
-  // MAXREFDES117 Write and Read Address
+  // MAX30101 Write and Read Address
   #define I2C_WRITE_ADDR 0x57 //0xAE
   #define I2C_READ_ADDR 0x58 //0xAF
 
-  // MAXREFDES117 Register Addresses
+  // MAX30101 Register Addresses
   #define REG_INTR_STATUS_1 0x00 // Interrupt Status 1
   #define REG_INTR_STATUS_2 0x01 // Interrupt Status 2
   #define REG_INTR_ENABLE_1 0x02 // Interrupt Enable 1
@@ -33,8 +33,8 @@ namespace MAX30101{
   #define REG_LED3_PA 0x0E  // Green
   #define REG_LED4_PA 0x0F  // Green
   #define REG_PILOT_PA 0x10   // LED Pulse Proximity Mode (apparently not implemented in MAX30101, but still appears to work)
-  #define REG_MULTI_LED_CTRL1 0x11 // Multi-LED Mode Control Registers
-  #define REG_MULTI_LED_CTRL2 0x12 // Multi-LED Mode Control Registers
+  #define REG_MULTI_LED_CTRL1 0x11 // Multi-LED Mode Control Registers for Slot 1 and Slot 2
+  #define REG_MULTI_LED_CTRL2 0x12 // Multi-LED Mode Control Registers for Slot 3 and Slot 4
   #define REG_TEMP_INTR 0x1F  // Die Temp Integer
   #define REG_TEMP_FRAC 0x20 // Die Temp Fraction
   #define REG_TEMP_CONFIG 0x21 // Die Temp Config
@@ -42,25 +42,37 @@ namespace MAX30101{
   #define REG_REV_ID 0xFE // Revision ID
   #define REG_PART_ID 0xFF // Part ID
 
+  // MAX30101 Mode Control Types
+  #define MODE_HR     B00000010 // Heart Rate only mode - uses red LED only
+  #define MODE_SPO2   B00000011 // SPO2 mode - uses red and IR MultiLEDSlot1
+  #define MODE_MULTI  B00000111 // Multi LED Mode - configurable LED use via reg_multi_led_mode
+
+  // MAX30101 Multi LED Control Types
+  #define ML_DISABLED     B000 // Slot is disabled
+  #define ML_RED          B001 // Set slot to use Red LED
+  #define ML_IR           B010 // Set slot to use IR LED
+  #define ML_GREEN        B011 // Set slot to use Green LED
+  #define ML_NONE         B100 // Set slot to no LED
+  #define ML_PILOT_RED    B101 // Set slot to use Red LED as Pilot <<NOT IN USE>>
+  #define ML_PILOT_IR     B110 // Set slot to use IR LED as Pilot <<NOT IN USE>>
+  #define ML_PILOT_GREEN  B111 // Set slot to use Green LED as Pilot <<NOT IN USE>>
+
+  /*
+  * Class that holds the MAX30101 initialise options
+  */
   class Initialiser
   {
-    uint8_t samp_avg;
-    uint8_t fifo_rollover;
-    uint8_t fifo_buff_full;
-    char* mode_ctrl;
-    uint8_t spo2_adc_range;
-    uint8_t spo2_sample_rate;
-    uint8_t led_pulse_width;
-    char* mlslot1;
-    char* mlslot2;
-    char* mlslot3;
-    char* mlslot4;
+    byte fifo_config;
+    byte mode_ctrl;
+    byte spo2_config;
+    byte mlslot1;
+    byte mlslot2;
+    byte mlslot3;
+    byte mlslot4;
     
     public:
-      //void SetVal(uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
-      //void SetVal(uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t, char*[]);
       void SampAvg(uint8_t);
-      void FIFORollover(uint8_t);
+      void FIFORollover(bool);
       void FIFOBuffFull(uint8_t);
       void ModeCtrl(char*);
       void SPO2ADCRange(uint8_t);
@@ -71,22 +83,18 @@ namespace MAX30101{
       void MultiLEDSlot3(char*);
       void MultiLEDSlot4(char*);
 
-      uint8_t SampAvg();
-      uint8_t FIFORollover();
-      uint8_t FIFOBuffFull();
-      char* ModeCtrl();
-      uint8_t SPO2ADCRange();
-      uint8_t SPO2SampRate();
-      uint8_t LEDPulseWidth();
-      char* MultiLEDSlot1();
-      char* MultiLEDSlot2();
-      char* MultiLEDSlot3();
-      char* MultiLEDSlot4();
+      byte FIFOConfig();
+      byte ModeCtrl();
+      byte SPO2Config();
+      byte MultiLEDCtrl1();
+      byte MultiLEDCtrl2();
 
       uint8_t SlotsInUse();
   };
 
-  // Class to store the LED Data
+  /*
+  * Struct to store the FIFO data options and pass them back to the calling function
+  */
   struct FIFOData
   {
     uint32_t slot1;
@@ -99,12 +107,8 @@ namespace MAX30101{
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
   bool initialise(Initialiser initOptions);
   bool reset();
-  //bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led);
   bool read_fifo(FIFOData &pun_Data);
-  uint8_t reg_fifo_config_val(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL);
-  uint8_t reg_mode_config_val(char* MODE_CTRL);
-  byte reg_multi_led_mode(char* SLOT1, char* SLOT2);
-  uint8_t reg_spo2_config_val(uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW);
+  byte led_mode_values(char* LED_MODE);
   //uint8_t reg_prox_int_thresh_val(uint8_t prox_int_thresh);
 }
 
