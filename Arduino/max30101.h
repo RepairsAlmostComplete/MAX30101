@@ -98,7 +98,7 @@ namespace MAX30101{
 
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
-  bool initialise(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[]);
+  bool initialise(MAX30101::Initialiser initOptions);
   bool reset();
   bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led);
   uint8_t reg_fifo_config_val(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL);

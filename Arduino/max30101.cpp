@@ -187,7 +187,7 @@ namespace MAX30101{
   * Return value:
   *   true on success
   */
-  bool initialise(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW, char* MULTI_LED_MODE[])
+  bool initialise(MAX30101::Initialiser initOptions)
   {
     
     uint8_t partid; // Variable to store part ID check
@@ -199,11 +199,11 @@ namespace MAX30101{
     MAX30101::read_reg(REG_PART_ID, &partid);
     if(partid!=0x15)
       return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, reg_mode_config_val(MODE_CTRL))) // Values calculated from constants passed to the function (MODE_CTRL)
+    if(!MAX30101::write_reg(REG_MODE_CONFIG, reg_mode_config_val(initOptions.ModeCtrl()))) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, reg_multi_led_mode(MULTI_LED_MODE[0], MULTI_LED_MODE[1])))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, reg_multi_led_mode(initOptions.MultiLEDMode().Slot1(), initOptions.MultiLEDMode().Slot2())))
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, reg_multi_led_mode(MULTI_LED_MODE[2], MULTI_LED_MODE[3])))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, reg_multi_led_mode(initOptions.MultiLEDMode().Slot3(), initOptions.MultiLEDMode().Slot4())))
       return false;
     if(!MAX30101::write_reg(REG_FIFO_WR_PTR, 0x00)) //FIFO_WR_PTR[4:0] - Clearing the write pointer
       return false;
@@ -211,9 +211,9 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_FIFO_RD_PTR, 0x00)) //FIFO_RD_PRT[4:0] - Clearing the read pointer
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_CONFIG, reg_fifo_config_val(SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL))) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
+    if(!MAX30101::write_reg(REG_FIFO_CONFIG, reg_fifo_config_val(initOptions.SampAvg(), initOptions.FIFORollover(), initOptions.FIFOBuffFull()))) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
       return false;
-    if(!MAX30101::write_reg(REG_SPO2_CONFIG, reg_spo2_config_val(SPO2_ADC_RGE, SPO2_SR, LED_PW))) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
+    if(!MAX30101::write_reg(REG_SPO2_CONFIG, reg_spo2_config_val(initOptions.SPO2ADCRange(), initOptions.SPO2SampRate(), initOptions.LEDPulseWidth()))) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
       return false;
     if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
