@@ -9,8 +9,10 @@
 #include <Wire.h>
 #include "max30101.h"
 
-namespace MAX30101{
-  
+namespace MAX30101{ 
+
+  uint8_t slotsInUse; // Stores the number of slots in use so that we know how many to process data for
+
   /*
   * Write a value to the MAX30101 registers
   * Parameters:
@@ -109,9 +111,20 @@ namespace MAX30101{
     led_pulse_width = value;
   }
 
-  void MAX30101::Initialiser::MultiLEDMode(MAX30101::MultiLEDSlots  mode){
-    //memcpy(multi_led_mode, mode, sizeof(multi_led_mode));
-    multi_led_mode = mode;
+  void MAX30101::Initialiser::MultiLEDSlot1(char* slot1){
+    mlslot1 = slot1;
+  }
+
+  void MAX30101::Initialiser::MultiLEDSlot2(char* slot2){
+    mlslot2 = slot2;
+  }
+
+  void MAX30101::Initialiser::MultiLEDSlot3(char* slot3){
+    mlslot3 = slot3;
+  }
+
+  void MAX30101::Initialiser::MultiLEDSlot4(char* slot4){
+    mlslot4 = slot4;
   }
 
   uint8_t MAX30101::Initialiser::SampAvg(){
@@ -142,43 +155,87 @@ namespace MAX30101{
     return led_pulse_width;
   }
 
-  MAX30101::MultiLEDSlots MAX30101::Initialiser::MultiLEDMode(){
-    return multi_led_mode;
+  char* MAX30101::Initialiser::MultiLEDSlot1(){
+    return mlslot1;
+  }
+
+  char* MAX30101::Initialiser::MultiLEDSlot2(){
+    return mlslot2;
+  }
+
+  char* MAX30101::Initialiser::MultiLEDSlot3(){
+    return mlslot3;
+  }
+
+  char* MAX30101::Initialiser::MultiLEDSlot4(){
+    return mlslot4;
+  }
+
+  uint8_t MAX30101::Initialiser::SlotsInUse(){ // Required so that we know how much data to collect
+    uint8_t slotsInUse = 0;
+
+    if (mode_ctrl == "HR"){ // Only one slot is in use (Slot1: RED)
+      slotsInUse = 1;
+    }
+
+    if (mode_ctrl == "SPO2"){ // Two slots are in use (Slot1: RED, Slot2: IR)
+      slotsInUse = 2;
+    }
+
+    if (mode_ctrl == "MULTI"){ // Multi can be different configuration, so needs to be calculated
+      if (mlslot1 != "DISABLED"){
+        slotsInUse ++;
+      }
+
+      if (mlslot2 != "DISABLED"){
+        slotsInUse ++;
+      }
+
+      if (mlslot3 != "DISABLED"){
+        slotsInUse ++;
+      }
+
+      if (mlslot4 != "DISABLED"){
+        slotsInUse ++;
+      }
+    }
+
+    return slotsInUse;
   }
   // *** End of functions for Initialiser Class ***
 
-  // *** Start of functions for MultiLEDSlots Class ***
-  void MAX30101::MultiLEDSlots::Slot1(char* led){
-    slot1 = led;
-  }
-  void MAX30101::MultiLEDSlots::Slot2(char* led){
-    slot2 = led;
-  }
-  void MAX30101::MultiLEDSlots::Slot3(char* led){
-    slot3 = led;
-  }
-  void MAX30101::MultiLEDSlots::Slot4(char* led){
-    slot4 = led;
+  // *** Start of functions for FIFOData Class ***
+  void MAX30101::FIFOData::Slot1(uint32_t data){
+    slot1 = data;
   }
 
-  char* MAX30101::MultiLEDSlots::Slot1(){
+  void MAX30101::FIFOData::Slot2(uint32_t data){
+    slot2 = data;
+  }
+
+  void MAX30101::FIFOData::Slot3(uint32_t data){
+    slot3 = data;
+  }
+
+  void MAX30101::FIFOData::Slot4(uint32_t data){
+    slot4 = data;
+  }
+
+  uint32_t MAX30101::FIFOData::Slot1(){
     return slot1;
   }
-
-  char* MAX30101::MultiLEDSlots::Slot2(){
+  
+  uint32_t MAX30101::FIFOData::Slot2(){
     return slot2;
   }
 
-  char* MAX30101::MultiLEDSlots::Slot3(){
+  uint32_t MAX30101::FIFOData::Slot3(){
     return slot3;
   }
 
-  char* MAX30101::MultiLEDSlots::Slot4(){
+  uint32_t MAX30101::FIFOData::Slot4(){
     return slot4;
   }
-
-  // *** End of functions for MultiLEDSlots Class ***
-  
 
   /*
   * Initialise the MAX30101 sensor
@@ -187,7 +244,7 @@ namespace MAX30101{
   * Return value:
   *   true on success
   */
-  bool initialise(MAX30101::Initialiser initOptions)
+  bool initialise(Initialiser initOptions)
   {
     
     uint8_t partid; // Variable to store part ID check
@@ -201,9 +258,9 @@ namespace MAX30101{
       return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
     if(!MAX30101::write_reg(REG_MODE_CONFIG, reg_mode_config_val(initOptions.ModeCtrl()))) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, reg_multi_led_mode(initOptions.MultiLEDMode().Slot1(), initOptions.MultiLEDMode().Slot2())))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, reg_multi_led_mode(initOptions.MultiLEDSlot1(), initOptions.MultiLEDSlot2())))
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, reg_multi_led_mode(initOptions.MultiLEDMode().Slot3(), initOptions.MultiLEDMode().Slot4())))
+    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, reg_multi_led_mode(initOptions.MultiLEDSlot3(), initOptions.MultiLEDSlot4())))
       return false;
     if(!MAX30101::write_reg(REG_FIFO_WR_PTR, 0x00)) //FIFO_WR_PTR[4:0] - Clearing the write pointer
       return false;
@@ -231,6 +288,7 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_INTR_ENABLE_2, 0x02))  // Should Interrupt on Temp Conversion -GL
       return false;
+    slotsInUse = initOptions.SlotsInUse();
     return true; // You were missing this and hence made the function less useful! -GL
   }
 
@@ -249,13 +307,15 @@ namespace MAX30101{
   * Return value:
   *   true on success
   */
-  bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led)
+  bool read_fifo(uint32_t *pun_slot1, uint32_t *pun_slot2, uint32_t *pun_slot3)
   {
+    Serial.printf("Slots in use: %i\n", slotsInUse);
+
 //    uint32_t un_temp;
 //    uint8_t uch_temp;
-    *pun_ir_led = 0;
-    *pun_red_led = 0;
-    *pun_green_led = 0;
+    *pun_slot1 = 0;
+    *pun_slot2 = 0;
+    *pun_slot3 = 0;
 //    MAX30101::read_reg(REG_INTR_STATUS_1, &uch_temp);  // No idea why you're doing this? INT STATUS is read already, reading again may clear interrupts again!!! -GL
 //    MAX30101::read_reg(REG_INTR_STATUS_2, &uch_temp);
 
@@ -284,9 +344,19 @@ namespace MAX30101{
     un_temp = Wire.read(); // Read the next byte
     *pun_ir_led += un_temp; // Add that data to pun_ir_led
 */
-    *pun_red_led |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
-    *pun_ir_led |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
-    *pun_green_led |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+    if (slotsInUse > 0){
+      *pun_slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
+    }
+    if (slotsInUse > 1){
+      *pun_slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
+    }
+    if (slotsInUse > 2){
+      *pun_slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+    }
+    if (slotsInUse > 3){
+      //*pun_slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+    }
+    
     Wire.endTransmission();
 
 //    *pun_red_led &= 0x03FFFF; // Apply mask MSB [23:18]

@@ -20,9 +20,6 @@
 // Number of Active Channels
 // #define RSTPIN 0            // Multiplex RST pin
 
-//char* multi_led_mode[] = {"RED", "IR", "GREEN", "DISABLED"};
-char* multi_led_mode[] = {MULTI_LED_SLOT1, MULTI_LED_SLOT2, MULTI_LED_SLOT3, MULTI_LED_SLOT4};
-
 unsigned long lastAnalog; // records last time analog-channel sampled
 
 uint32_t sampleNo[8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -44,13 +41,7 @@ void setup()
     Wire.setClock(400000);
 
     Serial.println();
-    
-    MAX30101::MultiLEDSlots multiLEDslots;
-    multiLEDslots.Slot1(MULTI_LED_SLOT1);
-    multiLEDslots.Slot2(MULTI_LED_SLOT2);
-    multiLEDslots.Slot3(MULTI_LED_SLOT3);
-    multiLEDslots.Slot4(MULTI_LED_SLOT4);
-
+ 
     MAX30101::Initialiser initOptions;
     initOptions.SampAvg(SAMP_AVE);
     initOptions.FIFORollover(FIFO_RO);
@@ -59,7 +50,13 @@ void setup()
     initOptions.SPO2ADCRange(ADC_RANGE);
     initOptions.SPO2SampRate(SAMP_RATE);
     initOptions.LEDPulseWidth(LED_PULSE_WIDTH);
-    initOptions.MultiLEDMode(multiLEDslots);   
+    initOptions.MultiLEDSlot1(MULTI_LED_SLOT1);
+    initOptions.MultiLEDSlot2(MULTI_LED_SLOT2);
+    initOptions.MultiLEDSlot3(MULTI_LED_SLOT3);
+    initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
+
+    Serial.print("Slots In Use: ");
+    Serial.println(initOptions.SlotsInUse());
 
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");

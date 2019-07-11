@@ -42,25 +42,6 @@ namespace MAX30101{
   #define REG_REV_ID 0xFE // Revision ID
   #define REG_PART_ID 0xFF // Part ID
 
-  class MultiLEDSlots
-  {
-    char* slot1;
-    char* slot2;
-    char* slot3;
-    char* slot4;
-
-    public:
-      void Slot1(char*);
-      void Slot2(char*);
-      void Slot3(char*);
-      void Slot4(char*);
-
-      char* Slot1();
-      char* Slot2();
-      char* Slot3();
-      char* Slot4();
-  };
-
   class Initialiser
   {
     uint8_t samp_avg;
@@ -70,7 +51,10 @@ namespace MAX30101{
     uint8_t spo2_adc_range;
     uint8_t spo2_sample_rate;
     uint8_t led_pulse_width;
-    MAX30101::MultiLEDSlots multi_led_mode;
+    char* mlslot1;
+    char* mlslot2;
+    char* mlslot3;
+    char* mlslot4;
     
     public:
       //void SetVal(uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
@@ -82,7 +66,10 @@ namespace MAX30101{
       void SPO2ADCRange(uint8_t);
       void SPO2SampRate(uint8_t);
       void LEDPulseWidth(uint8_t);
-      void MultiLEDMode(MAX30101::MultiLEDSlots);
+      void MultiLEDSlot1(char*);
+      void MultiLEDSlot2(char*);
+      void MultiLEDSlot3(char*);
+      void MultiLEDSlot4(char*);
 
       uint8_t SampAvg();
       uint8_t FIFORollover();
@@ -91,14 +78,37 @@ namespace MAX30101{
       uint8_t SPO2ADCRange();
       uint8_t SPO2SampRate();
       uint8_t LEDPulseWidth();
-      MAX30101::MultiLEDSlots MultiLEDMode();
+      char* MultiLEDSlot1();
+      char* MultiLEDSlot2();
+      char* MultiLEDSlot3();
+      char* MultiLEDSlot4();
+
+      uint8_t SlotsInUse();
   };
 
-  
+  // Class to store the LED Data
+  class FIFOData
+  {
+    uint32_t slot1;
+    uint32_t slot2;
+    uint32_t slot3;
+    uint32_t slot4;
+
+    public:
+      void Slot1(uint32_t);
+      void Slot2(uint32_t);
+      void Slot3(uint32_t);
+      void Slot4(uint32_t);
+
+      uint32_t Slot1();
+      uint32_t Slot2();
+      uint32_t Slot3();
+      uint32_t Slot4();
+  };
 
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
-  bool initialise(MAX30101::Initialiser initOptions);
+  bool initialise(Initialiser initOptions);
   bool reset();
   bool read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led, uint32_t *pun_green_led);
   uint8_t reg_fifo_config_val(uint8_t SMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL);
