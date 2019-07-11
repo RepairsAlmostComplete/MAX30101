@@ -449,9 +449,6 @@ namespace MAX30101{
     // Add in the LED mode for the second slot
     b_temp += led_mode_values(SLOT2) << 4;
 
-    Serial.println();
-    Serial.println(b_temp, BIN);    
-
     return b_temp;
   }
 
