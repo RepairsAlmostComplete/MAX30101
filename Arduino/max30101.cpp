@@ -57,7 +57,7 @@ namespace MAX30101{
       return true; // Need return value -GL
   }
 
-  void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW)
+  /*void MAX30101::Initialiser::SetVal(uint8_t SAMP_AVE, uint8_t FIFO_ROLLOVER_EN, uint8_t FIFO_A_FULL, char* MODE_CTRL, uint8_t SPO2_ADC_RGE, uint8_t SPO2_SR, uint8_t LED_PW)
   {
     samp_ave = SAMP_AVE;
     fifo_rollover_en = FIFO_ROLLOVER_EN;
@@ -78,7 +78,107 @@ namespace MAX30101{
     spo2_sr = SPO2_SR;
     led_pw = LED_PW;
     memcpy(multi_led_mode, MULTI_LED_MODE, sizeof(multi_led_mode));
+  }*/
+
+  // *** Start of functions for Initialiser Class ***
+  void MAX30101::Initialiser::SampAvg(uint8_t value){
+    samp_avg = value;
   }
+
+  void MAX30101::Initialiser::FIFORollover(uint8_t value){
+    fifo_rollover = value;
+  }
+
+  void MAX30101::Initialiser::FIFOBuffFull(uint8_t value){
+    fifo_buff_full = value;
+  }
+
+  void MAX30101::Initialiser::ModeCtrl(char* mode){
+    mode_ctrl = mode;
+  }
+
+  void MAX30101::Initialiser::SPO2ADCRange(uint8_t value){
+    spo2_adc_range = value;
+  }
+
+  void MAX30101::Initialiser::SPO2SampRate(uint8_t value){
+    spo2_sample_rate = value;
+  }
+
+  void MAX30101::Initialiser::LEDPulseWidth(uint8_t value){
+    led_pulse_width = value;
+  }
+
+  void MAX30101::Initialiser::MultiLEDMode(MAX30101::MultiLEDSlots  mode){
+    //memcpy(multi_led_mode, mode, sizeof(multi_led_mode));
+    multi_led_mode = mode;
+  }
+
+  uint8_t MAX30101::Initialiser::SampAvg(){
+    return samp_avg;
+  }
+
+  uint8_t MAX30101::Initialiser::FIFORollover(){
+    return fifo_rollover;
+  }
+
+  uint8_t MAX30101::Initialiser::FIFOBuffFull(){
+    return fifo_buff_full;
+  }
+
+  char* MAX30101::Initialiser::ModeCtrl(){
+    return mode_ctrl;
+  }
+
+  uint8_t MAX30101::Initialiser::SPO2ADCRange(){
+    return spo2_adc_range;
+  }
+
+  uint8_t MAX30101::Initialiser::SPO2SampRate(){
+    return spo2_sample_rate;
+  }
+
+  uint8_t MAX30101::Initialiser::LEDPulseWidth(){
+    return led_pulse_width;
+  }
+
+  MAX30101::MultiLEDSlots MAX30101::Initialiser::MultiLEDMode(){
+    return multi_led_mode;
+  }
+  // *** End of functions for Initialiser Class ***
+
+  // *** Start of functions for MultiLEDSlots Class ***
+  void MAX30101::MultiLEDSlots::Slot1(char* led){
+    slot1 = led;
+  }
+  void MAX30101::MultiLEDSlots::Slot2(char* led){
+    slot2 = led;
+  }
+  void MAX30101::MultiLEDSlots::Slot3(char* led){
+    slot3 = led;
+  }
+  void MAX30101::MultiLEDSlots::Slot4(char* led){
+    slot4 = led;
+  }
+
+  char* MAX30101::MultiLEDSlots::Slot1(){
+    return slot1;
+  }
+
+  char* MAX30101::MultiLEDSlots::Slot2(){
+    return slot2;
+  }
+
+  char* MAX30101::MultiLEDSlots::Slot3(){
+    return slot3;
+  }
+
+  char* MAX30101::MultiLEDSlots::Slot4(){
+    return slot4;
+  }
+
+  // *** End of functions for MultiLEDSlots Class ***
+  
 
   /*
   * Initialise the MAX30101 sensor

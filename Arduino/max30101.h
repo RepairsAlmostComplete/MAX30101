@@ -42,21 +42,59 @@ namespace MAX30101{
   #define REG_REV_ID 0xFE // Revision ID
   #define REG_PART_ID 0xFF // Part ID
 
+  class MultiLEDSlots
+  {
+    char* slot1;
+    char* slot2;
+    char* slot3;
+    char* slot4;
+
+    public:
+      void Slot1(char*);
+      void Slot2(char*);
+      void Slot3(char*);
+      void Slot4(char*);
+
+      char* Slot1();
+      char* Slot2();
+      char* Slot3();
+      char* Slot4();
+  };
+
   class Initialiser
   {
-    uint8_t samp_ave;
-    uint8_t fifo_rollover_en;
-    uint8_t fifo_a_full;
+    uint8_t samp_avg;
+    uint8_t fifo_rollover;
+    uint8_t fifo_buff_full;
     char* mode_ctrl;
-    uint8_t spo2_adc_rge;
-    uint8_t spo2_sr;
-    uint8_t led_pw;
-    char* multi_led_mode[4];
+    uint8_t spo2_adc_range;
+    uint8_t spo2_sample_rate;
+    uint8_t led_pulse_width;
+    MAX30101::MultiLEDSlots multi_led_mode;
     
     public:
-      void SetVal (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
-      void SetVal (uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t, char*[]);
+      //void SetVal(uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t);
+      //void SetVal(uint8_t, uint8_t, uint8_t, char*, uint8_t, uint8_t, uint8_t, char*[]);
+      void SampAvg(uint8_t);
+      void FIFORollover(uint8_t);
+      void FIFOBuffFull(uint8_t);
+      void ModeCtrl(char*);
+      void SPO2ADCRange(uint8_t);
+      void SPO2SampRate(uint8_t);
+      void LEDPulseWidth(uint8_t);
+      void MultiLEDMode(MAX30101::MultiLEDSlots);
+
+      uint8_t SampAvg();
+      uint8_t FIFORollover();
+      uint8_t FIFOBuffFull();
+      char* ModeCtrl();
+      uint8_t SPO2ADCRange();
+      uint8_t SPO2SampRate();
+      uint8_t LEDPulseWidth();
+      MAX30101::MultiLEDSlots MultiLEDMode();
   };
+
+  
 
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);

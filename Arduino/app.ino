@@ -44,9 +44,48 @@ void setup()
     Wire.setClock(400000);
 
     Serial.println();
-    Serial.println("TESTING CLASS");
+    
+    MAX30101::MultiLEDSlots multiLEDslots;
+    multiLEDslots.Slot1(MULTI_LED_SLOT1);
+    multiLEDslots.Slot2(MULTI_LED_SLOT2);
+    multiLEDslots.Slot3(MULTI_LED_SLOT3);
+    multiLEDslots.Slot4(MULTI_LED_SLOT4);
+
     MAX30101::Initialiser initOptions;
-    initOptions.SetVal(SAMP_AVE, FIFO_RO, ALMOST_FULL, SEN_MODE, ADC_RANGE, SAMP_RATE, LED_PULSE_WIDTH, multi_led_mode);
+    initOptions.SampAvg(SAMP_AVE);
+    initOptions.FIFORollover(FIFO_RO);
+    initOptions.FIFOBuffFull(ALMOST_FULL);
+    initOptions.ModeCtrl(SEN_MODE);
+    initOptions.SPO2ADCRange(ADC_RANGE);
+    initOptions.SPO2SampRate(SAMP_RATE);
+    initOptions.LEDPulseWidth(LED_PULSE_WIDTH);
+    initOptions.MultiLEDMode(multiLEDslots);
+    
+    Serial.println("TESTING CLASS");
+    Serial.print("SampAvg: ");
+    Serial.println(initOptions.SampAvg());
+    Serial.print("FIFORollover: ");
+    Serial.println(initOptions.FIFORollover());
+    Serial.print("FIFOBuffFull: ");
+    Serial.println(initOptions.FIFOBuffFull());
+    Serial.print("Sensing Mode: ");
+    Serial.println(initOptions.ModeCtrl());
+    Serial.print("SPO2ADCRange: ");
+    Serial.println(initOptions.SPO2ADCRange());
+    Serial.print("SPO2SampRate: ");
+    Serial.println(initOptions.SPO2SampRate());
+    Serial.print("LEDPulseWidth: ");
+    Serial.println(initOptions.LEDPulseWidth());
+    Serial.print("Slot 1: ");
+    Serial.println(initOptions.MultiLEDMode().Slot1());
+    Serial.print("Slot 2: ");
+    Serial.println(initOptions.MultiLEDMode().Slot2());
+    Serial.print("Slot 3: ");
+    Serial.println(initOptions.MultiLEDMode().Slot3());
+    Serial.print("Slot 4: ");
+    Serial.println(initOptions.MultiLEDMode().Slot4());
+    Serial.println("TESTING CLASS END");
+    
 
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
