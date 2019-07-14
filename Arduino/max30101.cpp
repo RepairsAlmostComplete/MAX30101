@@ -114,65 +114,13 @@ namespace MAX30101{
   /*
   * Sets the FIFO Buffer Full initialisation option
   * Parameters:
-  * - uint8_t value [17 - 32]
+  * - uint8_t value [0 - 15]
   * Return value:
   * - void
   * Sets the almost full flag at x samples free.
   */
   void MAX30101::Initialiser::FIFOBuffFull(uint8_t value){
-    switch (value) { // FIFO Almost Full Value - Returns full when it has x unread samples
-      case 32: // 32 unread samples (i.e. full FIFO) or 0 empty data slots
-        fifo_config += B00000000;
-        break;
-      case 31: // 31 unread samples or 1 empty data slots
-        fifo_config += B00000001;
-        break;
-      case 30: // 30 unread samples (2 empty data slots)
-        fifo_config += B00000010;
-        break;
-      case 29: // 29 unread samples (3 empty data slots)
-        fifo_config += B00000011;
-        break;
-      case 28: // 28 unread samples (4 empty data slots)
-        fifo_config += B00000100;
-        break;
-      case 27: // 27 unread samples (5 empty data slots)
-        fifo_config += B00000101;
-        break;
-      case 26: // 26 unread samples (6 empry data slots)
-        fifo_config += B00000110;
-        break;
-      case 25: // 25 unread samples (7 empty data slots)
-        fifo_config += B00000111;
-        break;
-      case 24: // 24 unread samples (8 empty data slots)
-        fifo_config += B00001000;
-        break;
-      case 23: // 23 unread samples (9 empty data slots)
-        fifo_config += B00001001;
-        break;
-      case 22: // 22 unread samples (10 empty data slots)
-        fifo_config += B00001010;
-        break;
-      case 21: // 21 unread samples (11 empty data slots)
-        fifo_config += B00001011;
-        break;
-      case 20: // 20 unread samples (12 empty data slots)
-        fifo_config += B00001100;
-        break;
-      case 19: // 19 unread samples (13 empty data slots)
-        fifo_config += B00001101;
-        break;
-      case 18: // 18 unread samples (14 empty data slots)
-        fifo_config += B00001110;
-        break;
-      case 17: // 17 unread samples (15 empty data slots)
-        fifo_config += B00001111;
-        break;
-      default: // 32 unread samples (0 emtpry data slots)
-        fifo_config += B00000000;
-        break;
-    }
+    fifo_config += value;
   }
 
   /*
@@ -360,6 +308,61 @@ namespace MAX30101{
   }
 
   /*
+  * Sets the brightness of the Red LED
+  * Parameters:
+  * - uint8_t value [0.0 - 51.0 in 0.2 increments]
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::LEDAmplitudeRED(uint8_t value){
+    led_pa_red = value / 0.2;
+  }
+
+  /*
+  * Sets the brightness of the IR LED
+  * Parameters:
+  * - uint8_t value [0.0 - 51.0 in 0.2 increments]
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::LEDAmplitudeIR(uint8_t value){
+    led_pa_ir = value / 0.2;
+  }
+
+  /*
+  * Sets the brightness of the Green1 LED
+  * Parameters:
+  * - uint8_t value [0.0 - 51.0 in 0.2 increments]
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::LEDAmplitudeGREEN1(uint8_t value){
+    led_pa_green1 = value / 0.2;
+  }
+
+  /*
+  * Sets the brightness of the Green2 LED
+  * Parameters:
+  * - uint8_t value [0.0 - 51.0 in 0.2 increments]
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::LEDAmplitudeGREEN2(uint8_t value){
+    led_pa_green2 = value / 0.2;
+  }
+
+  /*
+  * Sets the brightness of the Pilot LED
+  * Parameters:
+  * - uint8_t value [0.0 - 51.0 in 0.2 increments]
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::LEDAmplitudePilot(uint8_t value){
+    led_pa_pilot = value / 0.2;
+  }
+
+  /*
   * Returns the FIFOConfig value for MAX30101 initialisation
   * Parameters:
   * - none
@@ -422,6 +425,61 @@ namespace MAX30101{
     multiLEDCtrl2 += mlslot4 << 4;
 
     return multiLEDCtrl2;
+  }
+
+  /*
+  * Returns the LEDAmplitudeRED value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::LEDAmplitudeRED(){
+    return led_pa_red;
+  }
+
+  /*
+  * Returns the LEDAmplitudeIR value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::LEDAmplitudeIR(){
+    return led_pa_ir;
+  }
+
+    /*
+  * Returns the LEDAmplitudeGREEN1 value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::LEDAmplitudeGREEN1(){
+    return led_pa_green1;
+  }
+
+  /*
+  * Returns the LEDAmplitudeGREEN2 value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::LEDAmplitudeGREEN2(){
+    return led_pa_green2;
+  }
+
+  /*
+  * Returns the LEDAmplitudePilot value for MAX30101 initialisation
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::LEDAmplitudePilot(){
+    return led_pa_pilot;
   }
 
   /*
@@ -500,15 +558,23 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_SPO2_CONFIG, initOptions.SPO2Config())) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
       return false;
-    if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
+    /*if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
     if(!MAX30101::write_reg(REG_LED2_PA, 0x24)) // Choose value for ~ 7mA for LED2
+      return false;*/
+    //if(!MAX30101::write_reg(REG_LED3_PA, 0x24)) // Choose value for ~ 7mA for LED2
+    //  return false;
+    //if(!MAX30101::write_reg(REG_LED4_PA, 0x24)) // Choose value for ~ 7mA for LED2
+    //  return false;
+    if(!MAX30101::write_reg(REG_LED1_PA, initOptions.LEDAmplitudeRED())) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
-    if(!MAX30101::write_reg(REG_LED3_PA, 0x24)) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::write_reg(REG_LED2_PA, initOptions.LEDAmplitudeIR())) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED4_PA, 0x24)) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::write_reg(REG_LED3_PA, initOptions.LEDAmplitudeGREEN1())) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_PILOT_PA, 0x7f)) // Choose value for ~ 25mA for Pilot LED
+    if(!MAX30101::write_reg(REG_LED4_PA, initOptions.LEDAmplitudeGREEN2())) // Choose value for ~ 7mA for LED2
+      return false;
+    if(!MAX30101::write_reg(REG_PILOT_PA, initOptions.LEDAmplitudePilot())) // Choose value for ~ 25mA for Pilot LED
       return false;
     if(!MAX30101::write_reg(REG_PROX_INT_THRESH, 0x02))
       return false;

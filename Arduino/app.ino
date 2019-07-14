@@ -3,7 +3,7 @@
 
 #define SAMP_AVE 1          // Sampling average (Pos Val: 1, 2, 4, 8, 16, 32)
 #define FIFO_RO true        // Roll over on full (false = OFF, true = ON)
-#define ALMOST_FULL 24      // Set almost full flag at x samples free (Pos Val: 17 - 32)
+#define ALMOST_FULL 8      // Set almost full flag at x samples free (Pos Val: 0 - 15)
 #define SEN_MODE "MULTI"     // Set the sensor mode (Pos Val: HR, SPO2, MULTI)
 #define ADC_RANGE 4096      // SPO2 ADC range control (Pos Val: 2048, 4096, 8192, 16384)
 #define SAMP_RATE 100       // Sampling rate in Hz (Pos Val: 50, 100, 200, 400, 800, 1000, 1600, 3200)
@@ -12,6 +12,11 @@
 #define MULTI_LED_SLOT2 "IR" // The led to be used with slot 2 in Multi LED mode
 #define MULTI_LED_SLOT3 "GREEN" // The led to be used with slot 3 in Multi LED mode
 #define MULTI_LED_SLOT4 "DISABLED" // The led to be used with slot 4 in Multi LED mode, set to DISABLED when not in use
+#define LED_PA_RED 7.2 // (7.2) Sets the Pulse Amplitude (brightness) of the RED LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
+#define LED_PA_IR 7.2 // (7.2) Sets the Pulse Amplitude (brightness) of the IR LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
+#define LED_PA_GREEN1 100 // (51) Sets the Pulse Amplitude (brightness) of the GREEN1 LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
+#define LED_PA_GREEN2 100 // (51) Sets the Pulse Amplitude (brightness) of the GREEN2 LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
+#define LED_PA_PILOT 255 // (127) Sets the Pulse Amplitude (brightness) of the PILOT LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
 
 #define BIT(n,i) (n>>i&1) // Macro to get a specific bit of an integer
 
@@ -54,6 +59,18 @@ void setup()
     initOptions.MultiLEDSlot2(MULTI_LED_SLOT2);
     initOptions.MultiLEDSlot3(MULTI_LED_SLOT3);
     initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
+    initOptions.LEDAmplitudeRED(LED_PA_RED);
+    initOptions.LEDAmplitudeIR(LED_PA_IR);
+    initOptions.LEDAmplitudeGREEN1(LED_PA_GREEN1);
+    initOptions.LEDAmplitudeGREEN2(LED_PA_GREEN2);
+    initOptions.LEDAmplitudePilot(LED_PA_PILOT);
+
+    uint8_t a = 15;
+    byte b = a;
+
+    Serial.print("FIFO Config: ");
+    Serial.println(initOptions.FIFOConfig(), BIN);
+
 
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");

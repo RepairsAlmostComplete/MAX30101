@@ -62,6 +62,8 @@ namespace MAX30101{
   */
   class Initialiser
   {
+    byte int_enable1;
+    byte int_enable2;
     byte fifo_config;
     byte mode_ctrl;
     byte spo2_config;
@@ -69,27 +71,100 @@ namespace MAX30101{
     byte mlslot2;
     byte mlslot3;
     byte mlslot4;
+    byte led_pa_red;
+    byte led_pa_ir;
+    byte led_pa_green1;
+    byte led_pa_green2;
+    byte led_pa_pilot;
     
     public:
+      // <<< Interrupt Enable Registers >>>
+      // -- Set the values --
+
+      // Enables interrupt flag when data buffer is full
+      void EnBuffFull(bool);
+      void EnPPGReady(bool);
+      void EnAmbientLtOvFlow(bool);
+      void EnDieTempReady(bool);
+
+      // Return the values
+
+
+      // <<< FIFO Configuration Registers >>>
+      // -- Set the values --
+
+      // Sets the number of samples to average for a single data point
+      // Valid values are 1, 2, 4, 8, 16, 32
       void SampAvg(uint8_t);
+
+      // Enables overwrite of the buffer when full when true
+      // true = rollover enabled
+      // false = rollover disabled
       void FIFORollover(bool);
+
+      // Sets the number of samples remaining in the buffer when the
+      // FIFO full interrupt is flagged.
+      // Valud values are 0 - 15 (samples remaining)
       void FIFOBuffFull(uint8_t);
+
+      // Return the values
+
+      byte FIFOConfig();
+
+      // -- Mode Configuration Registers --
+      // Set the values
+
       void ModeCtrl(char*);
+
+      // Return the values
+
+      byte ModeCtrl();
+
+      // -- SpO2 Configuration Registers --
+      // Set the values
+
       void SPO2ADCRange(uint8_t);
       void SPO2SampRate(uint8_t);
       void LEDPulseWidth(uint8_t);
+
+      // Return the values
+
+      byte SPO2Config();
+
+      // -- LED Pulse Amplitude Registers --
+      // Set the values
+
+      void LEDAmplitudeRED(uint8_t);
+      void LEDAmplitudeIR(uint8_t);
+      void LEDAmplitudeGREEN1(uint8_t);
+      void LEDAmplitudeGREEN2(uint8_t);
+      void LEDAmplitudePilot(uint8_t);
+
+      // Return the values
+
+      byte LEDAmplitudeRED();
+      byte LEDAmplitudeIR();
+      byte LEDAmplitudeGREEN1();
+      byte LEDAmplitudeGREEN2();
+      byte LEDAmplitudePilot();
+
+      // -- Multi-LED Mode Control Registers --
+      // Set the values
+
       void MultiLEDSlot1(char*);
       void MultiLEDSlot2(char*);
       void MultiLEDSlot3(char*);
       void MultiLEDSlot4(char*);
 
-      byte FIFOConfig();
-      byte ModeCtrl();
-      byte SPO2Config();
+      // Return the values
+      
       byte MultiLEDCtrl1();
       byte MultiLEDCtrl2();
 
+      // Return Multi-LED Slots in Use
+
       uint8_t SlotsInUse();
+      
   };
 
   /*
