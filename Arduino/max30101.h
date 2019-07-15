@@ -123,9 +123,9 @@ namespace MAX30101{
       // -- SpO2 Configuration Registers --
       // Set the values
 
-      void SPO2ADCRange(uint8_t);
-      void SPO2SampRate(uint8_t);
-      void LEDPulseWidth(uint8_t);
+      void SPO2ADCRange(uint16_t);
+      void SPO2SampRate(uint16_t);
+      void LEDPulseWidth(uint16_t);
 
       // Return the values
 

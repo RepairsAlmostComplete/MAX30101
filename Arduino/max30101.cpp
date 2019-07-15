@@ -156,7 +156,7 @@ namespace MAX30101{
   * - void
   * Sets the ADC range in bits.
   */
-  void MAX30101::Initialiser::SPO2ADCRange(uint8_t value){
+  void MAX30101::Initialiser::SPO2ADCRange(uint16_t value){
     switch (value){
       case 2048:
         spo2_config += B00000000; // LSB Size 7.81pA, Full Scale 2048nA
@@ -186,7 +186,7 @@ namespace MAX30101{
   * NOTE: Higher sample rates requre the pulse width to be changed.
   * See documentation for more information.
   */
-  void MAX30101::Initialiser::SPO2SampRate(uint8_t value){
+  void MAX30101::Initialiser::SPO2SampRate(uint16_t value){
     switch (value){
       case 50:
         spo2_config += B00000000; // 50Hz (50 Samples per second)
@@ -231,7 +231,7 @@ namespace MAX30101{
   * - 215µs = 17 bits
   * - 411µs = 18 bits
   */
-  void MAX30101::Initialiser::LEDPulseWidth(uint8_t value){
+  void MAX30101::Initialiser::LEDPulseWidth(uint16_t value){
     switch (value) {
       case 15:
         spo2_config += B00000000; // 15 bits ADC Resolution with a pulse width of 69µs
