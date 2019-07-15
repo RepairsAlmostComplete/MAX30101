@@ -114,11 +114,11 @@ namespace MAX30101{
       // -- Mode Configuration Registers --
       // Set the values
 
-      void ModeCtrl(char*);
+      void ModeControl(char*);
 
       // Return the values
 
-      byte ModeCtrl();
+      byte ModeControl();
 
       // -- SpO2 Configuration Registers --
       // Set the values

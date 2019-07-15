@@ -52,7 +52,7 @@ void setup()
     initOptions.SampAvg(SAMP_AVE);
     initOptions.FIFORollover(FIFO_RO);
     initOptions.FIFOBuffFull(ALMOST_FULL);
-    initOptions.ModeCtrl(SEN_MODE);
+    initOptions.ModeControl(SEN_MODE);
     initOptions.SPO2ADCRange(ADC_RANGE);
     initOptions.SPO2SampRate(SAMP_RATE);
     initOptions.LEDPulseWidth(LED_PULSE_WIDTH);

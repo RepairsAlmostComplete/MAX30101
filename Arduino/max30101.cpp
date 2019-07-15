@@ -134,7 +134,7 @@ namespace MAX30101{
   * - SPO2 = Pulse oximeter mode, uses red and IR LEDs
   * - MULTI = Multi led mode, configurable via MultiLEDCtrl1/2
   */
-  void MAX30101::Initialiser::ModeCtrl(char* mode){
+  void MAX30101::Initialiser::ModeControl(char* mode){
     mode_ctrl = B00000000;
 
     if (mode == "HR"){
@@ -374,13 +374,13 @@ namespace MAX30101{
   }
 
   /*
-  * Returns the ModeCtrl value for MAX30101 initialisation
+  * Returns the ModeControl value for MAX30101 initialisation
   * Parameters:
   * - none
   * Return value:
   * - byte
   */
-  byte MAX30101::Initialiser::ModeCtrl(){
+  byte MAX30101::Initialiser::ModeControl(){
     return mode_ctrl;
   }
 
@@ -542,7 +542,7 @@ namespace MAX30101{
     MAX30101::read_reg(REG_PART_ID, &partid);
     if(partid!=0x15)
       return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.ModeCtrl())) // Values calculated from constants passed to the function (MODE_CTRL)
+    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.ModeControl())) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
     if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, initOptions.MultiLEDCtrl1()))
       return false;
