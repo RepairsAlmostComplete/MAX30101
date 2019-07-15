@@ -79,7 +79,7 @@ void setup()
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
-    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Need to look at this and see what it does and how we can make it a function of the driver
     Serial.println("Complete");
 
     // Setup ADC
