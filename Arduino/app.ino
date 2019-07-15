@@ -75,7 +75,7 @@ void setup()
 
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
-    while (!MAX30101::initialise(initOptions)) {
+    while (!MAX30101::Initialise(initOptions)) {
       Serial.println("Failed, retrying ...");
       delay(1000);
     }

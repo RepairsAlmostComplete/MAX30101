@@ -530,7 +530,7 @@ namespace MAX30101{
   * - true on success
   * Initialises the MAX30101 sensor as per the passed in options via the Initialiser object.
   */
-  bool initialise(Initialiser initOptions)
+  bool Initialise(Initialiser initOptions)
   {
     
     uint8_t partid; // Variable to store part ID check

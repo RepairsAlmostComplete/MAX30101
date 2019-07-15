@@ -180,7 +180,7 @@ namespace MAX30101{
 
   bool write_reg(uint8_t uch_addr, uint8_t uch_data);
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
-  bool initialise(Initialiser initOptions);
+  bool Initialise(Initialiser initOptions);
   bool reset();
   bool read_fifo(FIFOData &pun_Data);
   byte led_mode_values(char* LED_MODE);
