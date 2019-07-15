@@ -42,7 +42,8 @@ void setup()
     }
 
     //Begin I2C
-    Wire.begin(5, 4);
+    //Wire.begin(5, 4);
+    Wire.begin();
     Wire.setClock(400000);
 
     Serial.println();
