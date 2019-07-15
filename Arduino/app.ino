@@ -56,14 +56,14 @@ void setup()
     initOptions.SPO2ADCRange(ADC_RANGE);
     initOptions.SPO2SampRate(SAMP_RATE);
     initOptions.LEDPulseWidth(LED_PULSE_WIDTH);
-    initOptions.MultiLEDSlot1(MULTI_LED_SLOT1);
-    initOptions.MultiLEDSlot2(MULTI_LED_SLOT2);
-    initOptions.MultiLEDSlot3(MULTI_LED_SLOT3);
-    initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
     initOptions.LEDAmplitudeRED(LED_PA_RED);
     initOptions.LEDAmplitudeIR(LED_PA_IR);
     initOptions.LEDAmplitudeGREEN1(LED_PA_GREEN1);
     initOptions.LEDAmplitudeGREEN2(LED_PA_GREEN2);
+    initOptions.MultiLEDSlot1(MULTI_LED_SLOT1);
+    initOptions.MultiLEDSlot2(MULTI_LED_SLOT2);
+    initOptions.MultiLEDSlot3(MULTI_LED_SLOT3);
+    initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
     initOptions.LEDAmplitudePilot(LED_PA_PILOT);
 
     uint8_t a = 15;
