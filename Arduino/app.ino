@@ -1,6 +1,11 @@
 #include <Wire.h>
 #include "max30101.h"
 
+#define INTBUFFFULL true    // Defines if the Buffer Full Interrupt Flag should be enabled or not
+#define INTPPGREADY true    // Defines if the PPG Ready Interrupt Flag should be enabled or not
+#define INTAMBLIGHT true    // Defines if the Ambient Light Cancellation Overflow Interrupt Flag sould be enabled or not
+#define INTPROXIMITY true   // Defines if the Proximity Threshold Triggered Interrupt Flag is enabled or not
+#define INTDIETEMP true     // Defines it the Internal Die Temperature Interrupt Flag is enabled or not
 #define SAMP_AVE 1          // Sampling average (Pos Val: 1, 2, 4, 8, 16, 32)
 #define FIFO_RO true        // Roll over on full (false = OFF, true = ON)
 #define ALMOST_FULL 8      // Set almost full flag at x samples free (Pos Val: 0 - 15)
@@ -49,6 +54,11 @@ void setup()
     Serial.println();
  
     MAX30101::Initialiser initOptions;
+    initOptions.IntBuffFull(INTBUFFFULL);
+    initOptions.IntPPGReady(INTPPGREADY);
+    initOptions.IntAmbientLight(INTAMBLIGHT);
+    initOptions.IntProximity(INTPROXIMITY);
+    initOptions.IntDieTempReady(INTDIETEMP);
     initOptions.SampAvg(SAMP_AVE);
     initOptions.FIFORollover(FIFO_RO);
     initOptions.FIFOBuffFull(ALMOST_FULL);
@@ -69,9 +79,10 @@ void setup()
     uint8_t a = 15;
     byte b = a;
 
-    Serial.print("FIFO Config: ");
-    Serial.println(initOptions.FIFOConfig(), BIN);
-
+    Serial.print("Interrupt Enabled 1 Config: ");
+    Serial.println(initOptions.InterruptEnabled1(), BIN);
+    Serial.print("Interrupt Enabled 2 Config: ");
+    Serial.println(initOptions.InterruptEnabled2(), BIN);
 
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
@@ -79,12 +90,13 @@ void setup()
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
-    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Need to look at this and see what it does and how we can make it a function of the driver
+    //MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
     Serial.println("Complete");
 
     // Setup ADC
     pinMode(A0, INPUT);
     lastAnalog = millis();
+
 }
 
 void loop()
@@ -93,13 +105,17 @@ void loop()
     int c = 0;
     // Using a double read to get both INTR STATUS as the above is invalid
     // Chip appears to reset REG_INTR_STATUS_2 on reading REG_INTR_STATUS_1 and vice versa
-    Wire.beginTransmission(0x57);
+    /*/Wire.beginTransmission(0x57);
     Wire.write(REG_INTR_STATUS_2);
     Wire.endTransmission();
     Wire.requestFrom(0x57, 1);
     //data = Wire.read();
     data2 = Wire.read();
     Wire.endTransmission();
+    */
+
+    MAX30101::InterruptStatus interruptStatus;
+    interruptStatus.CheckStatus();
 
     //if (BIT(data, 7) == 1){ // If FIFO Buffer is almost full, collect data
     //if (BIT(data, 6) == 1){ // If NewSample, collect data
@@ -181,7 +197,8 @@ void loop()
       Serial.print(outSentence);
     }
 
-    if (BIT(data2, 1) == 1) {   // If temperature conversion ended
+    //if (BIT(data2, 1) == 1) {   // If temperature conversion ended
+    if (interruptStatus.DieTempReady()) {   // If temperature conversion ended
       uint8_t tempInt;
       uint8_t tempFrac;
       String outSentence = "";
@@ -189,14 +206,14 @@ void loop()
       MAX30101::read_reg(REG_TEMP_INTR, &tempInt);
       MAX30101::read_reg(REG_TEMP_FRAC, &tempFrac);
 
-      /*outSentence += "PT,";
+      outSentence += "PT,";
       outSentence += millis();
       outSentence += ",";
       outSentence += tempInt;
       outSentence += ",";
       outSentence += tempFrac;
       outSentence += "\r\n";
-      Serial.print(outSentence);*/
+      Serial.print(outSentence);
 
       MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
     }

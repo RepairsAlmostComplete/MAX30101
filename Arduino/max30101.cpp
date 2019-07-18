@@ -63,6 +63,103 @@ namespace MAX30101{
   // *** Start of functions for Initialiser Class ***
 
   /*
+  * Sets the Interrupt Buffer Full initialisation option
+  * Parameters:
+  * - bool
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::IntBuffFull(bool value){
+    if (value){
+      int_enable1 |= (1 << 7);
+    } else {
+      int_enable1 |= (0 << 7);
+    }
+  }
+
+  /*
+  * Sets the Interrupt Buffer Full initialisation option
+  * Parameters:
+  * - bool
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::IntPPGReady(bool value){
+    if (value){
+      int_enable1 |= (1 << 6);
+    } else {
+      int_enable1 |= (0 << 6);
+    }
+  }
+
+/*
+  * Sets the Interrupt Buffer Full initialisation option
+  * Parameters:
+  * - bool
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::IntAmbientLight(bool value){
+    if (value){
+      int_enable1 |= (1 << 5);
+    } else {
+      int_enable1 |= (0 << 5);
+    }
+  }
+
+  /*
+  * Sets the Interrupt Buffer Full initialisation option
+  * Parameters:
+  * - bool
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::IntProximity(bool value){
+    if (value){
+      int_enable1 |= (1 << 4);
+    } else {
+      int_enable1 |= (0 << 4);
+    }
+  }
+
+  /*
+  * Sets the Interrupt Buffer Full initialisation option
+  * Parameters:
+  * - bool
+  * Return value:
+  * - void
+  */
+  void MAX30101::Initialiser::IntDieTempReady(bool value){
+    if (value){
+      int_enable2 |= (1 << 1);
+    } else {
+      int_enable2 |= (0 << 1);
+    }
+  }
+
+  /*
+  * Returns the Interrupt Enable 1 initialisation value
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::InterruptEnabled1(){
+    return int_enable1;
+  }
+
+  /*
+  * Returns the Interrupt Enable 2 initialisation value
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  byte MAX30101::Initialiser::InterruptEnabled2(){
+    return int_enable2;
+  }
+
+  /*
   * Sets the Sampling Average initialisation option
   * Parameters:
   * - uint8_t value [Number of samples to average (1, 2, 3, 8, 16, 32)]
@@ -522,6 +619,120 @@ namespace MAX30101{
   }
   // *** End of functions for Initialiser Class ***
 
+  // *** Start of Functions for InterruptStatus Class ***
+
+  /*
+  * Initiates a poll of the sensor for the status of all interrupt flags
+  * Parameters:
+  * - none
+  * Return value:
+  * - void
+  */
+  void MAX30101::InterruptStatus::CheckStatus(){
+    uint8_t intStatus1;
+    uint8_t intStatus2;
+    
+    Wire.beginTransmission(I2C_WRITE_ADDR);
+    Wire.write(REG_INTR_STATUS_1);
+    Wire.endTransmission();
+    Wire.requestFrom(I2C_WRITE_ADDR, 2);
+    intStatus1 = Wire.read();
+    intStatus2 = Wire.read();
+    Wire.endTransmission();
+
+    if (BIT(intStatus1, 7) == 1){
+      fifo_almost_full = true;
+    }
+
+    if (BIT(intStatus1, 6) == 1){
+      fifo_data_ready = true;
+    }
+
+    if (BIT(intStatus1, 5) == 1){
+      ambient_light_ovf = true;
+    }
+    
+    if (BIT(intStatus1, 4) == 1){
+      proximity = true;
+    }
+
+    if (BIT(intStatus1, 0) == 1){
+      power_ready = true;
+    }
+
+    if (BIT(intStatus2, 1) == 1){
+      die_temp_ready = true;
+    }
+
+  }
+
+  /*
+  * Returns the value of the FIFOAlmostFull Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::FIFOAlmostFull(){
+    return fifo_almost_full;
+  }
+
+  /*
+  * Returns the value of the FIFODataReady Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::FIFODataReady(){
+    return fifo_data_ready;
+  }
+
+  /*
+  * Returns the value of the AmbientLightOverflow Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::AmbientLightOverflow(){
+    return ambient_light_ovf;
+  }
+
+  /*
+  * Returns the value of the AmbientLightOverflow Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::Proximity(){
+    return proximity;
+  }
+
+  /*
+  * Returns the value of the PowerReady Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::PowerReady(){
+    return power_ready;
+  }
+
+  /*
+  * Returns the value of the DieTempReady Interrupt Status
+  * Parameters:
+  * - none
+  * Return value:
+  * - byte
+  */
+  bool MAX30101::InterruptStatus::DieTempReady(){
+    return die_temp_ready;
+  }
+
+
   /*
   * Initialise the MAX30101 sensor
   * Parameters:
@@ -578,9 +789,9 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_PROX_INT_THRESH, 0x02))
       return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_1, 0xF0)) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed -GL
+    if(!MAX30101::write_reg(REG_INTR_ENABLE_1, initOptions.InterruptEnabled1())) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed -GL
       return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_2, 0x02))  // Should Interrupt on Temp Conversion -GL
+    if(!MAX30101::write_reg(REG_INTR_ENABLE_2, initOptions.InterruptEnabled2()))  // Should Interrupt on Temp Conversion -GL
       return false;
     slotsInUse = initOptions.SlotsInUse();
     return true; // You were missing this and hence made the function less useful! -GL

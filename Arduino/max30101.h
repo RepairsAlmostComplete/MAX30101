@@ -57,6 +57,9 @@ namespace MAX30101{
   #define ML_PILOT_IR     B110 // Set slot to use IR LED as Pilot <<NOT IN USE>>
   #define ML_PILOT_GREEN  B111 // Set slot to use Green LED as Pilot <<NOT IN USE>>
 
+  // Macros
+  #define BIT(n,i) (n>>i&1) // Macro to get a specific bit of an integer
+
   /*
   * Class that holds the MAX30101 initialise options
   */
@@ -82,13 +85,15 @@ namespace MAX30101{
       // -- Set the values --
 
       // Enables interrupt flag when data buffer is full
-      void EnBuffFull(bool);
-      void EnPPGReady(bool);
-      void EnAmbientLtOvFlow(bool);
-      void EnDieTempReady(bool);
+      void IntBuffFull(bool);
+      void IntPPGReady(bool);
+      void IntAmbientLight(bool);
+      void IntProximity(bool);
+      void IntDieTempReady(bool);
 
       // Return the values
-
+      byte InterruptEnabled1();
+      byte InterruptEnabled2();
 
       // <<< FIFO Configuration Registers >>>
       // -- Set the values --
@@ -165,6 +170,30 @@ namespace MAX30101{
 
       uint8_t SlotsInUse();
       
+  };
+
+  class InterruptStatus
+  {
+    bool fifo_almost_full;
+    bool fifo_data_ready;
+    bool ambient_light_ovf;
+    bool proximity;
+    bool power_ready;
+    bool die_temp_ready;
+
+    public:
+    
+    // Polls the interrupt Status
+    // Polling the interrupt status will clear all interrupt flags
+    void CheckStatus();
+
+    bool FIFOAlmostFull();
+    bool FIFODataReady();
+    bool AmbientLightOverflow();
+    bool Proximity();
+    bool PowerReady();
+    bool DieTempReady();
+
   };
 
   /*
