@@ -631,7 +631,14 @@ namespace MAX30101{
   void MAX30101::InterruptStatus::CheckStatus(){
     uint8_t intStatus1;
     uint8_t intStatus2;
-    
+
+    fifo_almost_full = false;
+    fifo_data_ready = false;
+    ambient_light_ovf = false;
+    proximity = false;
+    power_ready = false;
+    die_temp_ready = false;
+
     Wire.beginTransmission(I2C_WRITE_ADDR);
     Wire.write(REG_INTR_STATUS_1);
     Wire.endTransmission();
@@ -731,7 +738,6 @@ namespace MAX30101{
   bool MAX30101::InterruptStatus::DieTempReady(){
     return die_temp_ready;
   }
-
 
   /*
   * Initialise the MAX30101 sensor

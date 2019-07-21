@@ -193,7 +193,6 @@ namespace MAX30101{
     bool Proximity();
     bool PowerReady();
     bool DieTempReady();
-
   };
 
   /*

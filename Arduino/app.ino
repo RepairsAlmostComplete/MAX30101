@@ -90,7 +90,7 @@ void setup()
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
-    //MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
+    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
     Serial.println("Complete");
 
     // Setup ADC
