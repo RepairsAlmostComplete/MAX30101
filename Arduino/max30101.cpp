@@ -739,6 +739,51 @@ namespace MAX30101{
     return die_temp_ready;
   }
 
+  // *** End of functions for Interrupt Class ***
+
+  // *** Start of functions for DieTempConversion Class ***
+  void DieTempConvRequest(){
+    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+  }
+
+  void DieTempConvRetrieve(int8_t &tempInt, uint16_t &tempFrac){
+    uint8_t rawInt;
+    uint8_t rawFrac;
+    
+    MAX30101::read_reg(REG_TEMP_INTR, &rawInt);
+    MAX30101::read_reg(REG_TEMP_FRAC, &rawFrac);
+
+    if (rawInt <= 127){
+      tempInt = rawInt;
+    } else {
+      tempInt = -(256 - rawInt);
+    }
+
+    tempFrac = rawFrac * 625;
+  }
+
+  float DieTempConvRetrieveFloat(){
+    int8_t tempInt;
+    uint16_t tempFrac;
+
+    MAX30101::DieTempConvRetrieve(tempInt, tempFrac);
+
+    float tempFloat = tempFrac;
+    tempFloat = tempInt + tempFloat / 10000;
+
+    return (tempFloat);
+  }
+
+  int32_t DieTempConvRetrieveInt(){
+    int8_t tempInt;
+    uint16_t tempFrac;
+
+    MAX30101::DieTempConvRetrieve(tempInt, tempFrac);
+
+    return (tempInt * 10000 + tempFrac);
+  }
+  // *** End of functions for DieTempConversion Class ***
+
   /*
   * Initialise the MAX30101 sensor
   * Parameters:
@@ -816,7 +861,7 @@ namespace MAX30101{
   * Return value:
   * - bool [true on success]
   */
-  bool read_fifo(MAX30101::FIFOData &pun_Data) // FIFOData passed by reference, rather than pointer
+  bool ReadData(MAX30101::FIFOData &pun_Data) // FIFOData passed by reference, rather than pointer
   {
 
     pun_Data.slot1 = 0;

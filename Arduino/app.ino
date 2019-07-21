@@ -79,18 +79,14 @@ void setup()
     uint8_t a = 15;
     byte b = a;
 
-    Serial.print("Interrupt Enabled 1 Config: ");
-    Serial.println(initOptions.InterruptEnabled1(), BIN);
-    Serial.print("Interrupt Enabled 2 Config: ");
-    Serial.println(initOptions.InterruptEnabled2(), BIN);
-
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
     while (!MAX30101::Initialise(initOptions)) {
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
-    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
+    //MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
+    MAX30101::DieTempConvRequest(); // Initiate a temperature conversion
     Serial.println("Complete");
 
     // Setup ADC
@@ -174,7 +170,7 @@ void loop()
           }
           outSentence += sampleTime[c];
           outSentence += ",";
-          MAX30101::read_fifo(ledDataBuf);
+          MAX30101::ReadData(ledDataBuf);
           outSentence += ledDataBuf.slot1;
           outSentence += ",";
           outSentence += ledDataBuf.slot2;
@@ -199,7 +195,7 @@ void loop()
 
     //if (BIT(data2, 1) == 1) {   // If temperature conversion ended
     if (interruptStatus.DieTempReady()) {   // If temperature conversion ended
-      uint8_t tempInt;
+      /*uint8_t tempInt;
       uint8_t tempFrac;
       String outSentence = "";
 
@@ -215,6 +211,10 @@ void loop()
       outSentence += "\r\n";
       Serial.print(outSentence);
 
-      MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+      MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);*/
+      float tempFloat = MAX30101::DieTempConvRetrieveFloat();
+      int32_t tempInt = MAX30101::DieTempConvRetrieveInt();
+      Serial.printf("T,%d,%F,%d\n", millis(), tempFloat, tempInt);
+      MAX30101::DieTempConvRequest();
     }
 }
