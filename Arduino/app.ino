@@ -37,6 +37,8 @@ uint32_t sampleTime[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t startLogging[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint32_t analogSampNo = 0;
 
+MAX30101::DieTempConversion dieTemp; // Used to store the die temperature
+
 void setup()
 {
     Serial.begin(921600);
@@ -86,7 +88,8 @@ void setup()
       delay(1000);
     }
     //MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
-    MAX30101::DieTempConvRequest(); // Initiate a temperature conversion
+    //MAX30101::DieTempConvRequest(); // Initiate a temperature conversion
+    dieTemp.Request(); // Initiate a temperature conversion
     Serial.println("Complete");
 
     // Setup ADC
@@ -212,9 +215,11 @@ void loop()
       Serial.print(outSentence);
 
       MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);*/
-      float tempFloat = MAX30101::DieTempConvRetrieveFloat();
-      int32_t tempInt = MAX30101::DieTempConvRetrieveInt();
-      Serial.printf("T,%d,%F,%d\n", millis(), tempFloat, tempInt);
-      MAX30101::DieTempConvRequest();
+      //float tempFloat = MAX30101::DieTempConvRetrieveFloat();
+      //int32_t tempInt = MAX30101::DieTempConvRetrieveInt();
+      dieTemp.Retrieve();
+      Serial.printf("T,%d,%F,%d,%d,%d\n", millis(), dieTemp.GetFloat(), dieTemp.GetInt(), dieTemp.GetWhole(), dieTemp.GetFrac());
+      //MAX30101::DieTempConvRequest();
+      dieTemp.Request();
     }
 }

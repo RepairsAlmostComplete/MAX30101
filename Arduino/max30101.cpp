@@ -742,10 +742,35 @@ namespace MAX30101{
   // *** End of functions for Interrupt Class ***
 
   // *** Start of functions for DieTempConversion Class ***
+
+  // New one
+  void MAX30101::DieTempConversion::Request(){
+    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+  }
+  
+  // Old One *** TO BE REMOVED ***
   void DieTempConvRequest(){
     MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
   }
 
+  // New one
+  void MAX30101::DieTempConversion::Retrieve(){
+    uint8_t rawInt;
+    uint8_t rawFrac;
+    
+    MAX30101::read_reg(REG_TEMP_INTR, &rawInt);
+    MAX30101::read_reg(REG_TEMP_FRAC, &rawFrac);
+
+    if (rawInt <= 127){
+      tempInt = rawInt;
+    } else {
+      tempInt = -(256 - rawInt);
+    }
+
+    tempFrac = rawFrac * 625;
+  }
+
+  // Old One *** TO BE REMOVED ***
   void DieTempConvRetrieve(int8_t &tempInt, uint16_t &tempFrac){
     uint8_t rawInt;
     uint8_t rawFrac;
@@ -762,6 +787,15 @@ namespace MAX30101{
     tempFrac = rawFrac * 625;
   }
 
+  // New One
+  float MAX30101::DieTempConversion::GetFloat(){
+    float tempFloat = tempFrac;
+    tempFloat = tempInt + tempFloat / 10000;
+
+    return (tempFloat);
+  }
+
+  // Old One *** TO BE REMOVED ***
   float DieTempConvRetrieveFloat(){
     int8_t tempInt;
     uint16_t tempFrac;
@@ -774,6 +808,12 @@ namespace MAX30101{
     return (tempFloat);
   }
 
+  // New one
+  int32_t MAX30101::DieTempConversion::GetInt(){
+    return (tempInt * 10000 + tempFrac);
+  }
+
+  // Old One *** TO BE REMOVED ***
   int32_t DieTempConvRetrieveInt(){
     int8_t tempInt;
     uint16_t tempFrac;
@@ -781,6 +821,14 @@ namespace MAX30101{
     MAX30101::DieTempConvRetrieve(tempInt, tempFrac);
 
     return (tempInt * 10000 + tempFrac);
+  }
+
+  int8_t MAX30101::DieTempConversion::GetWhole(){
+    return (tempInt);
+  }
+
+  uint16_t MAX30101::DieTempConversion::GetFrac(){
+    return (tempFrac);
   }
   // *** End of functions for DieTempConversion Class ***
 

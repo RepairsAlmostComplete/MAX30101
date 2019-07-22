@@ -195,6 +195,21 @@ namespace MAX30101{
     bool DieTempReady();
   };
 
+  class DieTempConversion
+  {
+    int8_t tempInt;
+    uint16_t tempFrac;
+
+    public:
+    
+    void Request();
+    void Retrieve();
+    int8_t GetWhole();
+    uint16_t GetFrac();
+    float GetFloat();
+    int32_t GetInt();
+  };
+
   /*
   * Struct to store the FIFO data options and pass them back to the calling function
   */
