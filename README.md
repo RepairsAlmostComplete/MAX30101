@@ -44,7 +44,7 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;[Sensor Initialisation](#sensor-initialisation)
 
-&nbsp;&nbsp;&nbsp;[Initialisation Example](#initialisation-example)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Initialisation Example](#initialisation-example)
 
 &nbsp;&nbsp;&nbsp;[Check Interrupt Status](#check-interrupt-status)
 
@@ -64,6 +64,8 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Die Temp Ready Flag](#die-temp-ready-flag)
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Check Interrupt Status Example](#check-interrupt-status-example)
+
 &nbsp;&nbsp;&nbsp;[Die Temperature Conversion](#die-temperature-conversion)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Create a Die Temperature Conversion Object](#create-a-die-temperature-conversion-object)
@@ -78,6 +80,8 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieve the Die Temperature as an Integer](#retrieve-the-die-temperature-as-an-integer)
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Die Temperature Request Example](#die-temperature-request-example)
+
 &nbsp;&nbsp;&nbsp;[Data Counters](#data-counters)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Creating a DataCounter Object](#creating-a-datacounter-object)
@@ -91,6 +95,18 @@ Driver Library for Arduino and Simplelink Microcontrollers
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Overflow Counter](#Retrieving-the-overflow-counter)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Number of Data Available in the Buffer](#Retrieving-the-number-of-data-available-in-the-buffer)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Data Counters Example](#data-counters-example)
+
+&nbsp;&nbsp;&nbsp;[Obtaining PPG Data](#obtaining-ppg-data)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The FIFOData Object](#the-fifodata-object)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Read the PPG Data](#read-the-ppg-data)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Read a Single Data Point](#read-a-single-data-point)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Obtaining PPG Data Example](#obtaining-ppg-data-example)
 
 ## The MAX30101 PPG Sensor
 The MAX30101 sensor is produced by Maxim Integrated and is designed in biomedical applications for the detection of heart rate and blood oxygen saturation (SpO2).
