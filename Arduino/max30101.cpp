@@ -632,12 +632,12 @@ namespace MAX30101{
     uint8_t intStatus1;
     uint8_t intStatus2;
 
-    fifo_almost_full = false;
-    fifo_data_ready = false;
-    ambient_light_ovf = false;
+    fifoAlmostFull = false;
+    fifoDataReady = false;
+    ambientLightOVF = false;
     proximity = false;
-    power_ready = false;
-    die_temp_ready = false;
+    powerReady = false;
+    dieTempReady = false;
 
     Wire.beginTransmission(I2C_WRITE_ADDR);
     Wire.write(REG_INTR_STATUS_1);
@@ -648,15 +648,15 @@ namespace MAX30101{
     Wire.endTransmission();
 
     if (BIT(intStatus1, 7) == 1){
-      fifo_almost_full = true;
+      fifoAlmostFull = true;
     }
 
     if (BIT(intStatus1, 6) == 1){
-      fifo_data_ready = true;
+      fifoDataReady = true;
     }
 
     if (BIT(intStatus1, 5) == 1){
-      ambient_light_ovf = true;
+      ambientLightOVF = true;
     }
     
     if (BIT(intStatus1, 4) == 1){
@@ -664,79 +664,13 @@ namespace MAX30101{
     }
 
     if (BIT(intStatus1, 0) == 1){
-      power_ready = true;
+      powerReady = true;
     }
 
     if (BIT(intStatus2, 1) == 1){
-      die_temp_ready = true;
+      dieTempReady = true;
     }
 
-  }
-
-  /*
-  * Returns the value of the FIFOAlmostFull Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::FIFOAlmostFull(){
-    return fifo_almost_full;
-  }
-
-  /*
-  * Returns the value of the FIFODataReady Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::FIFODataReady(){
-    return fifo_data_ready;
-  }
-
-  /*
-  * Returns the value of the AmbientLightOverflow Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::AmbientLightOverflow(){
-    return ambient_light_ovf;
-  }
-
-  /*
-  * Returns the value of the AmbientLightOverflow Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::Proximity(){
-    return proximity;
-  }
-
-  /*
-  * Returns the value of the PowerReady Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::PowerReady(){
-    return power_ready;
-  }
-
-  /*
-  * Returns the value of the DieTempReady Interrupt Status
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  bool MAX30101::InterruptStatus::DieTempReady(){
-    return die_temp_ready;
   }
 
   // *** End of functions for Interrupt Class ***

@@ -172,14 +172,14 @@ namespace MAX30101{
       
   };
 
-  class InterruptStatus
+  struct InterruptStatus
   {
-    bool fifo_almost_full;
-    bool fifo_data_ready;
-    bool ambient_light_ovf;
+    bool fifoAlmostFull;
+    bool fifoDataReady;
+    bool ambientLightOVF;
     bool proximity;
-    bool power_ready;
-    bool die_temp_ready;
+    bool powerReady;
+    bool dieTempReady;
 
     public:
     

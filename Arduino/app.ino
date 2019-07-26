@@ -205,7 +205,7 @@ void loop()
     }
 
     //if (BIT(data2, 1) == 1) {   // If temperature conversion ended
-    if (interruptStatus.DieTempReady()) {   // If temperature conversion ended
+    if (interruptStatus.dieTempReady) {   // If temperature conversion ended
       /*uint8_t tempInt;
       uint8_t tempFrac;
       String outSentence = "";
