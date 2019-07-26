@@ -697,10 +697,26 @@ MAX30101::FIFOData ObjectName;
 ```
 For example:
 ```
-MAX30101::FIFOData ledDataBuf;
+MAX30101::FIFOData dataBuf;
 ```
-Note: Further examples in this document will assume the FIFO object is named ledDataBuf;
+Note: Further examples in this document will assume the FIFO object is named dataBuf;
 
 [Return to Table of Contents](#table-of-contents)
 
 ### Read the PPG Data
+Before you can obtain the values for the temporal data set, you must first read the data from the buffer. To read data from the buffer use the following syntax.
+```
+dataBuf.ReadData();
+```
+
+### Read a Single Data Point
+Depending on the configuration of *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)*, there may be one data point per read, or four data points per read. These are seperated into slot1 to slot4. For example if *[Mode Control](#mode-control)* is configured for *HR*, only one slot will be used, and therefore you only need to obtain data from slot1. If *[Mode Control](#mode-control)* is configured for *SpO2*, then two slots will be used, and you will need to obtain data from slot1 (Red) and slot2 (IR). If *[Mode Control](#mode-control)* is configured for *MULTI* mode, then there may be one to four sets of data to collect dependent on how *[Multi LED Slots](#mulit-led-slots)* is configured, in this case you may need to collect data from slot1 to slot4.
+
+To obtain data from the slots, use the following syntax:
+```
+dataBuf.slot1;
+dataBuf.slot2;
+dataBuf.slot3;
+dataBuf.slot4;
+```
+
