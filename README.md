@@ -44,6 +44,8 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;[Sensor Initialisation](#sensor-initialisation)
 
+&nbsp;&nbsp;&nbsp;[Initialisation Example](#initialisation-example)
+
 &nbsp;&nbsp;&nbsp;[Check Interrupt Status](#check-interrupt-status)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Creating an Interrupt Status Object](#creating-an-interrupt-status-object)
@@ -448,14 +450,14 @@ The following code snippet is an example on how to create an initialisation obje
     initOptions.SPO2ADCRange(4096);
     initOptions.SPO2SampRate(100);
     initOptions.LEDPulseWidth(411);
-    initOptions.LEDAmplitudeRED("RED");
-    initOptions.LEDAmplitudeIR("IR");
-    initOptions.LEDAmplitudeGREEN1("GREEN");
-    initOptions.LEDAmplitudeGREEN2("DISABLED");
-    initOptions.MultiLEDSlot1(7.2);
-    initOptions.MultiLEDSlot2(7.2);
-    initOptions.MultiLEDSlot3(100);
-    initOptions.MultiLEDSlot4(100);
+    initOptions.LEDAmplitudeRED(7.2);
+    initOptions.LEDAmplitudeIR(7.2);
+    initOptions.LEDAmplitudeGREEN1(100);
+    initOptions.LEDAmplitudeGREEN2(100);
+    initOptions.MultiLEDSlot1("RED");
+    initOptions.MultiLEDSlot2("IR");
+    initOptions.MultiLEDSlot3("GREEN");
+    initOptions.MultiLEDSlot4("DISABLED");
     initOptions.LEDAmplitudePilot(255);
 
     // Initialise the MAX30101 Sensor
