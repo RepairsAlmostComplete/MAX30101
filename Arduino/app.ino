@@ -110,7 +110,7 @@ void loop()
     uint8_t writePtr;
     uint8_t overflowCtr;
 
-    MAX30101::FIFOData dataBuff;
+    MAX30101::FIFOData dataBuf; // Create FIFO Data Object
 
     MAX30101::DataCounters dataCounters;
     dataCounters.Request();
@@ -134,16 +134,16 @@ void loop()
           }
           outSentence += sampleTime[c];
           outSentence += ",";
-          dataBuff.ReadData();
-          outSentence += dataBuff.slot1;
+          dataBuf.ReadData();
+          outSentence += dataBuf.slot1;
           outSentence += ",";
-          outSentence += dataBuff.slot2;
+          outSentence += dataBuf.slot2;
           outSentence += ",";
-          outSentence += dataBuff.slot3;
+          outSentence += dataBuf.slot3;
           outSentence += ",";
-          outSentence += dataBuff.slot4;
+          outSentence += dataBuf.slot4;
           outSentence += ",";
-          outSentence += overflowCtr;
+          outSentence += dataCounters.overflowCtr;
           outSentence += "\r\n";
 
           dataCounters.dataAval--;

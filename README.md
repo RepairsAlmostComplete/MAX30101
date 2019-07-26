@@ -434,6 +434,8 @@ while (!MAX30101::Initialise(initOptions))
 ### Initialisation Example
 The following code snippet is an example on how to create an initialisation object, set the initialisaion options and then initialise the MAX30101 sensor.
 ```C++
+void setup(){
+    ...
     // Create the Initialiser object
     MAX30101::Initialiser initOptions;
 
@@ -465,6 +467,8 @@ The following code snippet is an example on how to create an initialisation obje
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
+    ...
+}
 ```
 
 
@@ -550,19 +554,23 @@ interruptStatus.dieTempReady;
 ### Check Interrupt Status Example
 The following code snippet is an example on how to check the *interrupt status*.
 ```C++
-// Create the InterruptStatus object
-MAX30101::InterruptStatus interruptStatus;
+void loop(){
+    ...
+    // Create the InterruptStatus object
+    MAX30101::InterruptStatus interruptStatus;
 
-// Request a Check Status of the Interrputs
-interruptStatus.CheckStatus();
+    // Request a Check Status of the Interrputs
+    interruptStatus.CheckStatus();
 
-// Read the relevent status as required
-if (interruptStatus.FIFOAlmostFull()){
-    // Do something, for example get data
-}
+    // Read the relevent status as required
+    if (interruptStatus.FIFOAlmostFull()){
+        // Do something, for example get data
+    }
 
-if (interrputStatus.DieTempReady()){
-    // Do something, for example get the die temperature
+    if (interrputStatus.DieTempReady()){
+        // Do something, for example get the die temperature
+    }
+    ...
 }
 ```
 
@@ -673,11 +681,12 @@ if (interruptStatus.DieTempReady()){
 ### Die Temperature Request Example
 The following code snippet is an example on how to request the *die temperature*.
 ```C++
-// Create a DieTempConversion object
+// Create a global DieTempConversion object, this is so that you can use
+// the latest value if required for compensating for temperature
 MAX30101::DieTempConversion dieTemp;
 
 void setup(){
-    ...
+    ...    
     // Request the Die Temperature
     dieTemp.Request();
     ...
@@ -772,6 +781,30 @@ uint8_t dataAvailable = dataCounter.dataAval;
 
 [Return to Table of Contents](#table-of-contents)
 
+### Data Counters Example
+```C++
+void loop(){
+    ...
+    // Create a DataCounters object
+    MAX30101::DataCounters dataCounters;
+
+    // Request DataCounters
+    dataCounters.Request();
+
+    // while (dataCounters.dataAval > 0){
+        // Do something, for example collect data
+        dataBuf.ReadData();
+
+        // Decrement the dataAval so that we can iterate through the loop
+        // until there is no longer data available
+        dataCounters.dataAval--;
+    }
+    ...
+}
+```
+
+[Return to Table of Contents](#table-of-contents)
+
 ## Obtaining PPG Data
 The data buffer can hold 32 samples, however each of these samples holds the data from a single LED slot. Depending on the *[Mode Control](#mode-control)* selected, the number of slots utilised for one temporal data set will change, and hence the number of temporal data sets that the buffer can hold will change. If in *HR* mode for example, the buffer can store 32 temporal data points, however, if in *MULTI* mode with all four *[Multi LED Slots](#mulit-led-slots)* in use, the buffer can only store 8 temporal data sets. However, the handling of this is take care by the driver which will automatically obtain the right number of samples per request depending on the *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)* configuration.
 
@@ -807,4 +840,23 @@ dataBuf.slot1;
 dataBuf.slot2;
 dataBuf.slot3;
 dataBuf.slot4;
+```
+
+### Obtaining PPG Data Example
+The following code sniped is an example on how to obtain *PPG Data*.
+```C++
+void loop(){
+    ...
+    while (dataCounters.dataAval > 0){
+        // Create FIFOData object
+        MAX30101::FIFOData dataBuf;
+
+        // Read data
+        dataBuf.ReadData();
+
+        // Display the data
+        Serial.printf("%d,%d,%d,%d", millis(), dataBuf.slot1, dataBuf.slot2, dataBuf.slot3);
+    }
+    ...
+}
 ```
