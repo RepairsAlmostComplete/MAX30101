@@ -677,7 +677,7 @@ The number of data available in the buffer is calculated from the read and write
 dataCounter.dataAval;
 ```
 For example:
-```arduino
+```C
 uint8_t dataAvailable = dataCounter.dataAval;
 ```
 
