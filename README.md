@@ -445,7 +445,7 @@ interruptStatus.CheckStatus();
 ### Data Buffer Almost Full Flag
 The *FIFOAlmostFull* function returns a boolean value indicating if the data buffer has reached the preset condition for almost full. To obtain the *FIFOAlmostFull* flag status, use the following syntax:
 ```
-interruptStatus.FIFOAlmostFull();
+interruptStatus.FIFOAlmostFull;
 ```
 
 [Return to Table of Contents](#table-of-contents)
@@ -453,7 +453,7 @@ interruptStatus.FIFOAlmostFull();
 ### Data Available in Buffer Flag
 The *FIFODataReady* function returns a boolean value indicating that there is a new sample of data available in the data buffer. To obtain the *FIFODataReady* flag status, use the following syntax:
 ```
-interruptStatus.FIFOAlmostFull();
+interruptStatus.FIFOAlmostFull;
 ```
 
 [Return to Table of Contents](#table-of-contents)
@@ -461,7 +461,7 @@ interruptStatus.FIFOAlmostFull();
 ### Ambient Light Overflow Flag
 The *AmbientLightOverflow* function returns a boolean value when the photodiode has reached its maximum limit. This indicates that ambient light is affecting the output of the ADC. To obtain the *AmbientLightOverflow* flag status, use the following syntax:
 ```
-interruptStatus.AmbientLightOverflow();
+interruptStatus.AmbientLightOverflow;
 ```
 
 [Return to Table of Contents](#table-of-contents)
@@ -469,7 +469,7 @@ interruptStatus.AmbientLightOverflow();
 ### Proximity Threshold Triggered Flag
 The *Proximity* function returns a boolean value when the threshold for proximity is reached, triggering the start of data collection. To obtain the *Proximity* flag status, use the following syntax:
 ```
-interruptStatus.Proximity();
+interruptStatus.Proximity;
 ```
 
 [Return to Table of Contents](#table-of-contents)
@@ -477,7 +477,7 @@ interruptStatus.Proximity();
 ### Power Ready Flag
 The *PowerReady* function returns a boolean value indicting that the sensor is powered up and ready to collect data. To obtain the *PowerReady* flag status, use the following syntax:
 ```
-interruptStatus.PowerReady();
+interruptStatus.PowerReady;
 ```
 
 [Return to Table of Contents](#table-of-contents)
@@ -487,7 +487,7 @@ The *DieTempReady* function returns a boolean value indicating that a temperatur
 
 To obtain the *DieTempReady* flag status, use the following syntax:
 ```
-interruptStatus.DieTempReady();
+interruptStatus.DieTempReady;
 ```
 
 [Return to Table of Contents](#table-of-contents)
