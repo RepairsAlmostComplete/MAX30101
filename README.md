@@ -429,6 +429,45 @@ while (!MAX30101::Initialise(initOptions))
 
 [Return to Table of Contents](#table-of-contents)
 
+### Initialisation Example
+The following code snippet is an example on how to create an initialisation object, set the initialisaion options and then initialise the MAX30101 sensor.
+```C
+    // Create the Initialiser object
+    MAX30101::Initialiser initOptions;
+
+    // Set the initialisation options
+    initOptions.IntBuffFull(true);
+    initOptions.IntPPGReady(true);
+    initOptions.IntAmbientLight(true);
+    initOptions.IntProximity(true);
+    initOptions.IntDieTempReady(true);
+    initOptions.SampAvg(1);
+    initOptions.FIFORollover(true);
+    initOptions.FIFOBuffFull(8);
+    initOptions.ModeControl("MULTI");
+    initOptions.SPO2ADCRange(4096);
+    initOptions.SPO2SampRate(100);
+    initOptions.LEDPulseWidth(411);
+    initOptions.LEDAmplitudeRED("RED");
+    initOptions.LEDAmplitudeIR("IR");
+    initOptions.LEDAmplitudeGREEN1("GREEN");
+    initOptions.LEDAmplitudeGREEN2("DISABLED");
+    initOptions.MultiLEDSlot1(7.2);
+    initOptions.MultiLEDSlot2(7.2);
+    initOptions.MultiLEDSlot3(100);
+    initOptions.MultiLEDSlot4(100);
+    initOptions.LEDAmplitudePilot(255);
+
+    // Initialise the MAX30101 Sensor
+    while (!MAX30101::Initialise(initOptions)) {
+      Serial.println("Failed, retrying ...");
+      delay(1000);
+    }
+```
+
+
+[Return to Table of Contents](#table-of-contents)
+
 ## Check Interrupt Status
 To check if an interrupt has been flagged we need to check the interrupt status. The interrupt status can be checked by first creating an *InterruptStatus* object and then initiating a *CheckStatus* on the object. The status of each interrupt is then written to the *InterruptStatus* object and can be retrieved from the *InterruptStatus* object.
 
