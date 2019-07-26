@@ -76,6 +76,20 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieve the Die Temperature as an Integer](#retrieve-the-die-temperature-as-an-integer)
 
+&nbsp;&nbsp;&nbsp;[Data Counters](#data-counters)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Creating a DataCounter Object](#creating-a-datacounter-object)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Requesting the DataCounters](#requesting-the-datacounters)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Write Pointer](#retreiving-the-write-pointer)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Read Pointer](#retreiving-the-read-pointer)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Overflow Counter](#retreiving-the-overflow-counter)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Number of Data Available in the Buffer](#retreiving-the-number-of-data-available-in-the-buffer)
+
 ## The MAX30101 PPG Sensor
 The MAX30101 sensor is produced by Maxim Integrated and is designed in biomedical applications for the detection of heart rate and blood oxygen saturation (SpO2).
 
@@ -595,3 +609,81 @@ if (interruptStatus.DieTempReady()){
 
 [Return to Table of Contents](#table-of-contents)
 
+## Data Counters
+The data counter object is used to retrieve the *[write pointer](#retreiving-the-write-pointer)*, the *[read pointer](#retreiving-the-read-pointer)*, the *[overflow counter](#retreiving-the-overflow-counter)* and the *[data available](#retreiving-the-number-of-data-available-in-the-buffer)*.
+
+[Return to Table of Contents](#table-of-contents)
+
+### Creating a DataCounter object
+Before you can request the data counters, you must create a *DataCounter* object. To create a *DataCounter* object, use the following syntax.
+```
+MAX30101::DataCounter ObjectName;
+```
+For example:
+```
+MAX30101::DataCounter dataCounter
+```
+Note: Futher examples in this document will assume the *DataCounter* object is named *dataCounter*.
+
+[Return to Table of Contents](#table-of-contents)
+
+### Requesting the DataCounters
+Once the *[DataCounter](#creating-a-datacounter-object)* has been created, you need to request the *data counters*, which reads the data from the sensor. To request the *data conuters* use the following syntax.
+```
+dataCounter.Request();
+```
+
+[Return to Table of Contents](#table-of-contents)
+
+### Retreiving the Write Pointer
+The write pointer contains a value indicating the next available position in the buffer where data will be written to. To read the write pointer value use the following syntax.
+```
+dataCounter.writePtr;
+```
+For example:
+```
+uint8_t writePointer = dataCounter.writePtr;
+```
+
+[Return to Table of Contents](#table-of-contents)
+
+### Retreiving the Read Pointer
+The read pointer contains a value indicating the current read postition in the buffer. To read the read pointer value use the following syntax.
+```
+dataCounter.readPtr;
+```
+For example:
+```
+uint8_t readPointer = dataCounter.readPtr;
+```
+
+[Return to Table of Contents](#table-of-contents)
+
+### Retreiving the Overflow Counter
+The overflow counter indicates how many datapoints have been dropped due to the buffer being full. To read the overflow counter value use the following syntax.
+```
+dataCounter.overflowCtr;
+```
+For example:
+```
+uint8_t overflowCounter = dataCoutner.overflowCtr;
+```
+
+[Return to Table of Contents](#table-of-contents)
+
+### Retreiving the Number of Data Available in the Buffer
+The number of data available in the buffer is calculated from the read and write pointers. The struct performs this calculation each time there is a *[request to collect the data counters](#requesting-the-datacounters)*. To read the number of data available in the buffer us the following syntax.
+```
+dataCounter.dataAval;
+```
+For example:
+```
+uint8_t dataAvailable = dataCounter.dataAval;
+```
+
+[Return to Table of Contents](#table-of-contents)
+
+## Obtaining PPG Data
+
+
+[Return to Table of Contents](#table-of-contents)

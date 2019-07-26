@@ -610,7 +610,7 @@ namespace MAX30101{
     return (tempFrac);
   }
   // *** End of functions for DataAvaliable Class ***
-  void MAX30101::DataCounters::get(){
+  void MAX30101::DataCounters::Request(){
     Wire.beginTransmission(I2C_WRITE_ADDR);
     Wire.write(REG_FIFO_WR_PTR);
     Wire.endTransmission();

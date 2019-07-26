@@ -191,7 +191,7 @@ namespace MAX30101{
     uint8_t overflowCtr;
     int8_t dataAval = 0;
 
-    void get();
+    void Request();
   };
 
   /*

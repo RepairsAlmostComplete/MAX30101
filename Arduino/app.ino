@@ -87,8 +87,7 @@ void setup()
       Serial.println("Failed, retrying ...");
       delay(1000);
     }
-    //MAX30101::write_reg(REG_TEMP_CONFIG, 0x01); // Initiates a temperature conversion
-    //MAX30101::DieTempConvRequest(); // Initiate a temperature conversion
+
     dieTemp.Request(); // Initiate a temperature conversion
     Serial.println("Complete");
 
@@ -102,67 +101,21 @@ void loop()
 {
     uint8_t data2;
     int c = 0;
-    // Using a double read to get both INTR STATUS as the above is invalid
-    // Chip appears to reset REG_INTR_STATUS_2 on reading REG_INTR_STATUS_1 and vice versa
-    /*/Wire.beginTransmission(0x57);
-    Wire.write(REG_INTR_STATUS_2);
-    Wire.endTransmission();
-    Wire.requestFrom(0x57, 1);
-    //data = Wire.read();
-    data2 = Wire.read();
-    Wire.endTransmission();
-    */
 
     MAX30101::InterruptStatus interruptStatus;
     interruptStatus.CheckStatus();
 
-    //if (BIT(data, 7) == 1){ // If FIFO Buffer is almost full, collect data
-    //if (BIT(data, 6) == 1){ // If NewSample, collect data
     String outSentence = "";
     uint8_t readPtr;
     uint8_t writePtr;
     uint8_t overflowCtr;
-    //uint32_t redLEDBuf;
-    //uint32_t irLEDBuf;
-    //uint32_t greenLEDBuf;
+
     MAX30101::FIFOData ledDataBuf;
-    //uint8_t dataAval;
-
-    /*MAX30101::read_reg(REG_FIFO_RD_PTR, &readPtr);
-      MAX30101::read_reg(REG_FIFO_WR_PTR, &writePtr);
-      MAX30101::read_reg(REG_OVF_COUNTER, &overflowCtr);*/
-
-    // Getting how much data is available
-    /*
-    Wire.beginTransmission(I2C_WRITE_ADDR);
-    Wire.write(REG_FIFO_WR_PTR);
-    Wire.endTransmission();
-    Wire.requestFrom(I2C_WRITE_ADDR, 3);
-    writePtr = Wire.read();
-    overflowCtr = Wire.read();
-    readPtr = Wire.read();
-    Wire.endTransmission();
-    */
 
     MAX30101::DataCounters dataCounters;
-    dataCounters.get();
+    dataCounters.Request();
     
     if (dataCounters.readPtr != dataCounters.writePtr) {
-      /*outSentence += "PH,";
-      outSentence += millis();
-      outSentence += ",";
-      outSentence += overflowCtr;
-      outSentence += ",";*/
-      /*
-      if (readPtr < writePtr) {
-        dataAval = writePtr - readPtr;
-      } else {
-        dataAval = 32 - readPtr + writePtr;
-      }
-      */
-      /*outSentence += dataAval;
-      outSentence += "\r\n";*/
-      //Serial.print(outSentence);
 
       if (dataCounters.dataAval == 1 && startLogging[c] == 0){
         sampleTime[c] = millis();
@@ -192,42 +145,18 @@ void loop()
           outSentence += ",";
           outSentence += overflowCtr;
           outSentence += "\r\n";
-  
-          /*if(dataAval>1){
-            outSentence+=",";
-            } else {
-            outSentence+="\r\n";
-            }*/
+
           dataCounters.dataAval--;
         }
       }
       Serial.print(outSentence);
     }
 
-    //if (BIT(data2, 1) == 1) {   // If temperature conversion ended
     if (interruptStatus.dieTempReady) {   // If temperature conversion ended
-      /*uint8_t tempInt;
-      uint8_t tempFrac;
-      String outSentence = "";
 
-      MAX30101::read_reg(REG_TEMP_INTR, &tempInt);
-      MAX30101::read_reg(REG_TEMP_FRAC, &tempFrac);
-
-      outSentence += "PT,";
-      outSentence += millis();
-      outSentence += ",";
-      outSentence += tempInt;
-      outSentence += ",";
-      outSentence += tempFrac;
-      outSentence += "\r\n";
-      Serial.print(outSentence);
-
-      MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);*/
-      //float tempFloat = MAX30101::DieTempConvRetrieveFloat();
-      //int32_t tempInt = MAX30101::DieTempConvRetrieveInt();
       dieTemp.Retrieve();
       Serial.printf("T,%d,%F,%d,%d,%d\n", millis(), dieTemp.GetFloat(), dieTemp.GetInt(), dieTemp.GetWhole(), dieTemp.GetFrac());
-      //MAX30101::DieTempConvRequest();
+
       dieTemp.Request();
     }
 }
