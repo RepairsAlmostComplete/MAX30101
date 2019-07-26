@@ -123,11 +123,11 @@ In the MAX30101 library a class named *Initialiser* is used to define the initia
 
 ### Create an Initialiser Object
 An *Initialiser* object is required in order to set the initialisation options of the MAX30101 sensor. This object is then passed into the Initialise function of the library configuring the MAX30101 sensor for use. To create an *Initialiser* object use the following syntax.
-```
+```C
 MAX30101::Initialiser ObjectName;
 ```
 For example:
-```
+```C
 MAX30101::Initialiser initOptions;
 ```
 
@@ -140,11 +140,11 @@ This interrupt is used to indicate when the data buffer is almost full. The buff
 
 To enable the *Enable Buffer Full Interrupt* use the following syntax:
 
-```
+```C
 initOptions.IntBuffFull(bool);
 ```
 For example:
-```
+```C
 initOptions.IntBuffFull(true);
 ```
 
@@ -153,11 +153,11 @@ initOptions.IntBuffFull(true);
 ### Enable PPG Ready Interrupt
 This interrut is used to indicate when new data is availabe in the data buffer. To enable the *Enable PPG Ready Interrupt* use the following syntax:
 
-```
+```C
 initOptions.IntPPGReady(bool);
 ```
 For example:
-```
+```C
 initOptions.IntPPGReady(true);
 ```
 
@@ -166,11 +166,11 @@ initOptions.IntPPGReady(true);
 ### Enable Ambient Light Cancellation Interrupt
 This interrupt is used to indicate when the photo diode is saturated, indicating that ambient light is affecting the readings. To enable the *Enable Ambient Light Cancellation Interrupt* use the following syntax:
 
-```
+```C
 initOptions.IntAmbientLight(bool);
 ```
 For example:
-```
+```C
 initOptions.IntAmbientLight(true);
 ```
 
@@ -181,11 +181,11 @@ This interrupt is used to indicate that the proximity threshold has been reached
 
 To set the *Enable Proximity Threshold Triggered Interrupt*, use the following syntax:
 
-```
+```C
 initOptions.IntProximity(bool);
 ```
 For example:
-```
+```C
 initOptions.IntProximity(true);
 ```
 
@@ -196,11 +196,11 @@ This interrupt enables the ability of the sensor to measure the temperature of t
 
 To enable the *Enable Die Temp Ready Interrupt*, use the following syntax:
 
-```
+```C
 initOptions.IntDieTempReady(bool);
 ```
 For example:
-```
+```C
 initOptions.IntDieTempReady(true);
 ```
 
@@ -212,11 +212,11 @@ The *Sampling Average* initialisation option sets the number of samples that are
 Valid values for *Sampling Average* are 1 (no averaging), 2, 4, 8, 16 and 32.
 
 To set the *Sampling Average* use the following syntax.
-```
+```C
 initOptions.SampAvg(uint8_t);
 ```
 For example:
-```
+```C
 initOptions.SampAvg(8);
 ```
 
@@ -228,11 +228,11 @@ The *Buffer Rollover* option defines if the buffer should rollover when full, an
 Valid values for *Buffer Rollover* are true (rollover on) and false (rollover off);
 
 To set the *Buffer Rollover* use the following syntax.
-```
+```C
 initOptions.FIFORollover(bool);
 ```
 For example:
-```
+```C
 initOptions.FIFORollover(true);
 ```
 
@@ -244,11 +244,11 @@ The *Buffer Almost Full Value* is an interrupt that is flagged when the data buf
 Valid values for *Buffer Almost Full Value* are 0 to 15.
 
 To set the *Buffer Almost Full Value* use the following syntax.
-```
+```C
 initOptions.FIFOBuffFull(uint8_t);
 ```
 For example:
-```
+```C
 initOptions.FIFOBuffFull(10);
 ```
 
@@ -264,11 +264,11 @@ Valid values for *Mode Control* are HR, SPO2 and MULTI.
 - **MULTI** - MULTI mode allows custom configuration of the LEDs, enabling use of the green LED alone or along side of the red and IR LEDs. Using this mode you **must** configure the *Multi LED Slots* and *LED Pulse Amplitude* options.
 
 To set the *Mode Control* option, use the following syntax.
-```
+```C
 initOptions.ModeCtrl(char*);
 ```
 For example:
-```
+```C
 initOptions.ModeCtrl("MULTI");
 ```
 
@@ -287,11 +287,11 @@ Valid valuse for the *SPO2 ADC Range* are 2048, 4096, 8192 and 16384.
 | 62.5 | 16384 |
 
 To set the *SPO2 ADC Range* use the following syntax.
-```
+```C
 initOptions.SPO2ADCRange(uint16_t);
 ```
 For example:
-```
+```C
 initOptions.SPO2ADCRange(8192);
 ```
 
@@ -305,11 +305,11 @@ Also note that when setting the sample rate it is important to take into conside
 Valid values for *SPO2 Sample Rate* are 50, 100, 200, 400, 800, 1000, 1600 and 3200.
 
 To set the *SPO2 Sample Rate* use the following syntax.
-```
+```C
 initOptions.SPO2SampRate(uint16_t);
 ```
 For example:
-```
+```C
 initOptions.SPO2SampRate(100);
 ```
 
@@ -328,11 +328,11 @@ Valid values for *LED Pulse Width* are 69µs, 118µs, 215µs and 411µs.
 | 411µs (410.75µs) | 18 bits |
 
 To set the *LED Pulse Width* use the following syntax.
-```
+```C
 initOptions.LEDPulseWidth(uint16_t);
 ```
 For example:
-```
+```C
 initOptions.LEDPulseWidth(118);
 ```
 [Return to Table of Contents](#table-of-contents)
@@ -352,14 +352,14 @@ Note: Both LED 3 and LED 4 are wired in the MAX30101 to the Green LED, hence LED
 Valid values for *LED Pulse Amplitude* are 0.0 to 51.0 in 0.2 increments.
 
 To set the *LED Pulse Amplitude* use the following syntax.
-```
+```C
 initOptions.LEDAmplitudeRED(uint8_t);
 initOptions.LEDAmplitudeIR(uint8_t);
 initOptions.LEDAmplitudeGREEN1(uint8_t);
 initOptions.LEDAmplitudeGREEN2(uint8_t);
 ```
 For example:
-```
+```C
 initOptions.LEDAmplitudeRED(7.2);
 initOptions.LEDAmplitudeIR(7.2);
 initOptions.LEDAmplitudeGREEN1(100);
@@ -374,11 +374,11 @@ The *Proximity Mode LED Pulse Amplitude* is not defined in the MAX30101 datashee
 Valid values for *Proximity Mode LED Pulse Amplitude* are 0.0 to 51.0 in 0.2 increments.
 
 To set the *Proximity Mode LED Pulse Amplitude* use the following syntax.
-```
+```C
 initOptions.LEDAmplitudePilot(uint8_t);
 ```
 For example:
-```
+```C
 initOptions.LEDAmplitudePilot(uint8_t);
 ```
 
@@ -390,14 +390,14 @@ There are four *Multi LED Slots* in the MAX30101. Each of these slots can be con
 Valid values for *Multi LED Slots* are RED, IR, GREEN, DISABLED, NONE.
 
 To set the *Multi LED Slots*, use the following syntax
-```
+```C
 initOptions.MultiLEDSlot1(char*);
 initOptions.MultiLEDSlot2(char*);
 initOptions.MultiLEDSlot3(char*);
 initOptions.MultiLEDSlot4(char*);
 ```
 For example:
-```
+```C
 initOptions.MultiLEDSlot1("RED");
 initOptions.MultiLEDSlot2("IR");
 initOptions.MultiLEDSlot3("GREEN");
@@ -410,16 +410,16 @@ initOptions.MultiLEDSlot4("DISABLED");
 Once the Initialiser object has been created, and the initialisation options configured, the MAX30101 sensor must be initialised. Initialising the MAX30101 is achieved by calling the *Initialise* method and passing in the Initialise object. The method will return a boolean value as to the success of the initalisation.
 
 To initialse the MAX30101 sensor use the following syntax.
-```
+```C
 MAX30101::Initialise(MAX30101::Initialiser);
 ```
 For example:
-```
+```C
 MAX30101::Initialise(initOptions);
 ```
 
 This can be used with a while loop to wait for the sensor, for example
-```
+```C
 while (!MAX30101::Initialise(initOptions))
 {
     Serial.println("MAX30101 Initialisation Failed, retrying...");
@@ -434,11 +434,11 @@ To check if an interrupt has been flagged we need to check the interrupt status.
 
 ### Creating an Interrupt Status Object
 An *InterruptStatus* object is required in order to check and retrieve the status of the interrupts. To create an *InterruptStatus* object, use the following syntax.
-```
+```C
 MAX30101::InterruptStatus ObjectName;
 ```
 For example:
-```
+```C
 MAX30101::Initialiser interrputStatus;
 ```
 
@@ -450,7 +450,7 @@ Note: Further example in this document will assume the *InterruptStatus* object 
 Use the *CheckStatus* function to obtain and interperate the interrupt flags. This must be called each time you want to check the status of the interrupt. A call to *CheckStatus* will obtain the status of all interrup flags, the status of each flag can then be obtained using the calls to functions detailed below.
 
 To perform a *CheckStatus* use the following syntax:
-```
+```C
 interruptStatus.CheckStatus();
 ```
 
@@ -458,7 +458,7 @@ interruptStatus.CheckStatus();
 
 ### Data Buffer Almost Full Flag
 The *FIFOAlmostFull* function returns a boolean value indicating if the data buffer has reached the preset condition for almost full. To obtain the *FIFOAlmostFull* flag status, use the following syntax:
-```
+```C
 interruptStatus.fifoAlmostFull;
 ```
 
@@ -466,7 +466,7 @@ interruptStatus.fifoAlmostFull;
 
 ### Data Available in Buffer Flag
 The *FIFODataReady* function returns a boolean value indicating that there is a new sample of data available in the data buffer. To obtain the *FIFODataReady* flag status, use the following syntax:
-```
+```C
 interruptStatus.fifoDataReady;
 ```
 
@@ -474,7 +474,7 @@ interruptStatus.fifoDataReady;
 
 ### Ambient Light Overflow Flag
 The *AmbientLightOverflow* function returns a boolean value when the photodiode has reached its maximum limit. This indicates that ambient light is affecting the output of the ADC. To obtain the *AmbientLightOverflow* flag status, use the following syntax:
-```
+```C
 interruptStatus.ambientLightOVF;
 ```
 
@@ -482,7 +482,7 @@ interruptStatus.ambientLightOVF;
 
 ### Proximity Threshold Triggered Flag
 The *Proximity* function returns a boolean value when the threshold for proximity is reached, triggering the start of data collection. To obtain the *Proximity* flag status, use the following syntax:
-```
+```C
 interruptStatus.proximity;
 ```
 
@@ -490,7 +490,7 @@ interruptStatus.proximity;
 
 ### Power Ready Flag
 The *PowerReady* function returns a boolean value indicting that the sensor is powered up and ready to collect data. To obtain the *PowerReady* flag status, use the following syntax:
-```
+```C
 interruptStatus.powerReady;
 ```
 
@@ -500,7 +500,7 @@ interruptStatus.powerReady;
 The *DieTempReady* function returns a boolean value indicating that a temperature conversion has completed, and the temperature values are ready in the register for collection. A request must be made to initiate a die temperature conversion before one will become available to be read. To request a die temperature conversion see the section *[Die Temperature Conversion](#die-temperature-conversion)*.
 
 To obtain the *DieTempReady* flag status, use the following syntax:
-```
+```C
 interruptStatus.dieTempReady;
 ```
 
@@ -513,11 +513,11 @@ The sensor contains a built in temperature sensor for reporting on the temperatu
 
 ### Create a Die Temperature Conversion Object
 Before you can request a die temperature converation you need to create a *DieTempConversion* object to store the temperature. Use the following syntax to create a *DieTempConversion* object:
-```
+```C
 MAX30101::DieTempConversion Object Name
 ```
 For example:
-```
+```C
 MAX30101::DieTempConverstion dieTemp;
 ```
 
@@ -527,7 +527,7 @@ Note: Further examples in this document will assume the *DieTempConverstion* obj
 
 ### Request Die Temperature Conversion
 Before you can *[Retrieve the Die Temperature](retrieve-the-die-temperature)*, you must first request a *Die Temperature Conversion*. Use the following syntax to request a *Die Temperature Conversion*.
-```
+```C
 dieTemp.Request();
 ```
 
@@ -537,11 +537,11 @@ dieTemp.Request();
 Once you have requested the die temperature, you can then retrieve the die temperature, however before you do, you need to check that the die temperature has been converted by interrogating the *[Die Temp Ready Flag](#die-temp-ready-flag)*. You must retreive the die temperature before you can obtain the values using *GetWhole*, *GetFrac*, *GetFloat* or *GetInt*. Retrieveing the die temperature will store the value in the object so that it can be used in between requests and retrievals of temperature, whereby the retrieved temperature is returned.
 
 To retrieve the die temperature use the following syntax:
-```
+```C
 dieTemp.Retrieve();
 ```
 For example:
-```
+```C
 if (interruptStatus.DieTempReady()){
     dieTemp.Retrieve();
 }
@@ -553,12 +553,12 @@ if (interruptStatus.DieTempReady()){
 Retrieveing the die temperature as seperate whole and fraction can be suitable when you wish to minimise the size of the variables used to store or transmit the die temperature. In this function, the whole number is returned as an 8 bit signed integer, while the fraction is returned as a seperate 16 bit unsigned integer. To use this function you must pass a int8_t for the whole number and a uint16_t for the fraction into the function.
 
 Use the following syntax to request the die temperature as a seperate whole and fraction:
-```
+```C
 dieTemp.GetWhole();
 dieTemp.GetFrac();
 ```
 For example:
-```
+```C
 int8_t tempWhole;
 uint16_t tempFrac;
 if (interruptStatus.DieTempReady()){
@@ -575,11 +575,11 @@ if (interruptStatus.DieTempReady()){
 If you need the die temperature in a human readable format, or as a decimal number for other opreations, the die temperature can be requested in a floating point integer.
 
 Use the following syntax to request the die temperature as a floating point integer.
-```
+```C
 dieTemp.GetFloat();
 ```
 For example:
-```
+```C
 float temperature;
 if (interruptStatus.DieTempReady()){
     dieTemp.Retrieve();
@@ -594,11 +594,11 @@ if (interruptStatus.DieTempReady()){
 If you need the die temperature as a single interger inclusive of the fraction portion, you can request the die temperature as an integer. The integer is returned as a signed 32 bit integer, and shifted by four decimal places. For example a temperature of 32.875°C is represented as 328750.
 
 Use the following syntax to request the die temperature as an integer.
-```
+```C
 dieTemp.GetInt();
 ```
 For example:
-```
+```C
 int32_t temperature;
 if (interruptStatus.DieTempReady()){
     dieTemp.Retrieve();
@@ -616,11 +616,11 @@ The data counter object is used to retrieve the *[write pointer](#Retrieving-the
 
 ### Creating a DataCounter object
 Before you can request the data counters, you must create a *DataCounter* object. To create a *DataCounter* object, use the following syntax.
-```
+```C
 MAX30101::DataCounter ObjectName;
 ```
 For example:
-```
+```C
 MAX30101::DataCounter dataCounter
 ```
 Note: Futher examples in this document will assume the *DataCounter* object is named *dataCounter*.
@@ -629,7 +629,7 @@ Note: Futher examples in this document will assume the *DataCounter* object is n
 
 ### Requesting the DataCounters
 Once the *[DataCounter](#creating-a-datacounter-object)* has been created, you need to request the *data counters*, which reads the data from the sensor. To request the *data conuters* use the following syntax.
-```
+```C
 dataCounter.Request();
 ```
 
@@ -637,11 +637,11 @@ dataCounter.Request();
 
 ### Retrieving the Write Pointer
 The write pointer contains a value indicating the next available position in the buffer where data will be written to. To read the write pointer value use the following syntax.
-```
+```C
 dataCounter.writePtr;
 ```
 For example:
-```
+```C
 uint8_t writePointer = dataCounter.writePtr;
 ```
 
@@ -649,11 +649,11 @@ uint8_t writePointer = dataCounter.writePtr;
 
 ### Retrieving the Read Pointer
 The read pointer contains a value indicating the current read postition in the buffer. To read the read pointer value use the following syntax.
-```
+```C
 dataCounter.readPtr;
 ```
 For example:
-```
+```C
 uint8_t readPointer = dataCounter.readPtr;
 ```
 
@@ -661,11 +661,11 @@ uint8_t readPointer = dataCounter.readPtr;
 
 ### Retrieving the Overflow Counter
 The overflow counter indicates how many datapoints have been dropped due to the buffer being full. To read the overflow counter value use the following syntax.
-```
+```C
 dataCounter.overflowCtr;
 ```
 For example:
-```
+```C
 uint8_t overflowCounter = dataCoutner.overflowCtr;
 ```
 
@@ -673,7 +673,7 @@ uint8_t overflowCounter = dataCoutner.overflowCtr;
 
 ### Retrieving the Number of Data Available in the Buffer
 The number of data available in the buffer is calculated from the read and write pointers. The struct performs this calculation each time there is a *[request to collect the data counters](#requesting-the-datacounters)*. To read the number of data available in the buffer us the following syntax.
-```
+```C
 dataCounter.dataAval;
 ```
 For example:
@@ -692,11 +692,11 @@ Before you can obtain the PPG data, you first need to determine if there is data
 
 ### The FIFOData Object
 The *FIFOData* object is used to read the PPG data and for retrieval of that data. To create an *FIFOData* object use the following syntax.
-```
+```C
 MAX30101::FIFOData ObjectName;
 ```
 For example:
-```
+```C
 MAX30101::FIFOData dataBuf;
 ```
 Note: Further examples in this document will assume the FIFO object is named dataBuf;
@@ -705,7 +705,7 @@ Note: Further examples in this document will assume the FIFO object is named dat
 
 ### Read the PPG Data
 Before you can obtain the values for the temporal data set, you must first read the data from the buffer. To read data from the buffer use the following syntax.
-```
+```C
 dataBuf.ReadData();
 ```
 
@@ -713,7 +713,7 @@ dataBuf.ReadData();
 Depending on the configuration of *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)*, there may be one data point per read, or four data points per read. These are seperated into slot1 to slot4. For example if *[Mode Control](#mode-control)* is configured for *HR*, only one slot will be used, and therefore you only need to obtain data from slot1. If *[Mode Control](#mode-control)* is configured for *SpO2*, then two slots will be used, and you will need to obtain data from slot1 (Red) and slot2 (IR). If *[Mode Control](#mode-control)* is configured for *MULTI* mode, then there may be one to four sets of data to collect dependent on how *[Multi LED Slots](#mulit-led-slots)* is configured, in this case you may need to collect data from slot1 to slot4.
 
 To obtain data from the slots, use the following syntax:
-```arduino
+```C
 dataBuf.slot1;
 dataBuf.slot2;
 dataBuf.slot3;
