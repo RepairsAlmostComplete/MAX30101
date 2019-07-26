@@ -547,6 +547,25 @@ interruptStatus.dieTempReady;
 
 [Return to Table of Contents](#table-of-contents)
 
+### Check Interrupt Status Example
+The following code snippet is an example on how to check the *interrupt status*.
+```C++
+// Create the InterruptStatus object
+MAX30101::InterruptStatus interruptStatus;
+
+// Request a Check Status of the Interrputs
+interruptStatus.CheckStatus();
+
+// Read the relevent status as required
+if (interruptStatus.FIFOAlmostFull()){
+    // Do something, for example get data
+}
+
+if (interrputStatus.DieTempReady()){
+    // Do something, for example get the die temperature
+}
+```
+
 ## Die Temperature Conversion
 The sensor contains a built in temperature sensor for reporting on the temperature of the die. This can be used to increase accuracy of data, as temperature can have an effect on accruacty. To obtain a temperature reading you must first *[Request a Die Temperature Conversion](#request-a-die-temperature-conversion)* and then *[Retrieve the Die Temperature](retrieve-the-die-temperature)*.
 
