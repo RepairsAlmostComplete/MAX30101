@@ -71,9 +71,9 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::IntBuffFull(bool value){
     if (value){
-      int_enable1 |= (1 << 7);
+      intEnable1 |= (1 << 7);
     } else {
-      int_enable1 |= (0 << 7);
+      intEnable1 |= (0 << 7);
     }
   }
 
@@ -86,9 +86,9 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::IntPPGReady(bool value){
     if (value){
-      int_enable1 |= (1 << 6);
+      intEnable1 |= (1 << 6);
     } else {
-      int_enable1 |= (0 << 6);
+      intEnable1 |= (0 << 6);
     }
   }
 
@@ -101,9 +101,9 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::IntAmbientLight(bool value){
     if (value){
-      int_enable1 |= (1 << 5);
+      intEnable1 |= (1 << 5);
     } else {
-      int_enable1 |= (0 << 5);
+      intEnable1 |= (0 << 5);
     }
   }
 
@@ -116,9 +116,9 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::IntProximity(bool value){
     if (value){
-      int_enable1 |= (1 << 4);
+      intEnable1 |= (1 << 4);
     } else {
-      int_enable1 |= (0 << 4);
+      intEnable1 |= (0 << 4);
     }
   }
 
@@ -131,32 +131,10 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::IntDieTempReady(bool value){
     if (value){
-      int_enable2 |= (1 << 1);
+      intEnable2 |= (1 << 1);
     } else {
-      int_enable2 |= (0 << 1);
+      intEnable2 |= (0 << 1);
     }
-  }
-
-  /*
-  * Returns the Interrupt Enable 1 initialisation value
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::InterruptEnabled1(){
-    return int_enable1;
-  }
-
-  /*
-  * Returns the Interrupt Enable 2 initialisation value
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::InterruptEnabled2(){
-    return int_enable2;
   }
 
   /*
@@ -169,25 +147,25 @@ namespace MAX30101{
   void MAX30101::Initialiser::SampAvg(uint8_t value){
     switch (value) {
       case 1: // No averaging
-        fifo_config += B00000000;
+        fifoConfig += B00000000;
         break;
       case 2: // 2 samples averaged per FIFO sample
-        fifo_config += B00100000;
+        fifoConfig += B00100000;
         break;
       case 4: // 4 samples averaged per FIFO sample
-        fifo_config += B01000000;
+        fifoConfig += B01000000;
         break;
       case 8: // 8 samples averaged per FIFO sample
-        fifo_config += B01100000;
+        fifoConfig += B01100000;
         break;
       case 16: // 16 samples averaged per FIFO sample
-        fifo_config += B10000000;
+        fifoConfig += B10000000;
         break;
       case 32: // 32 samples averaged per FIFO sample``
-        fifo_config += B10100000;
+        fifoConfig += B10100000;
         break;
       default: // No averaging
-        fifo_config += B00000000;
+        fifoConfig += B00000000;
         break;
     }
   }
@@ -202,9 +180,9 @@ namespace MAX30101{
   */
   void MAX30101::Initialiser::FIFORollover(bool value){
     if (value == true){
-      fifo_config += B00000000; // FIFO Rolls on Full Disabled
+      fifoConfig += B00000000; // FIFO Rolls on Full Disabled
     } else {
-      fifo_config += B00010000; // FIFO Rolls on Full Enabled
+      fifoConfig += B00010000; // FIFO Rolls on Full Enabled
     }
   }
 
@@ -217,7 +195,7 @@ namespace MAX30101{
   * Sets the almost full flag at x samples free.
   */
   void MAX30101::Initialiser::FIFOBuffFull(uint8_t value){
-    fifo_config += value;
+    fifoConfig += value;
   }
 
   /*
@@ -232,16 +210,16 @@ namespace MAX30101{
   * - MULTI = Multi led mode, configurable via MultiLEDCtrl1/2
   */
   void MAX30101::Initialiser::ModeControl(char* mode){
-    mode_ctrl = B00000000;
+    modeCtrl = B00000000;
 
     if (mode == "HR"){
-      mode_ctrl += MODE_HR;  // HR mode only
+      modeCtrl += MODE_HR;  // HR mode only
     } else if (mode == "SPO2") {
-      mode_ctrl += MODE_SPO2;  // SPO2 mode only
+      modeCtrl += MODE_SPO2;  // SPO2 mode only
     } else if (mode == "MULTI") {
-      mode_ctrl += MODE_MULTI;  // Multi mode (Red, IR and Green)
+      modeCtrl += MODE_MULTI;  // Multi mode (Red, IR and Green)
     } else {
-      mode_ctrl += MODE_SPO2; // Default to SPO2 mode
+      modeCtrl += MODE_SPO2; // Default to SPO2 mode
     }
   }
 
@@ -256,19 +234,19 @@ namespace MAX30101{
   void MAX30101::Initialiser::SPO2ADCRange(uint16_t value){
     switch (value){
       case 2048:
-        spo2_config += B00000000; // LSB Size 7.81pA, Full Scale 2048nA
+        spo2Config += B00000000; // LSB Size 7.81pA, Full Scale 2048nA
         break;
       case 4096:
-        spo2_config += B00100000; // LSB Size 15.63pA, Full Scale 4096nA
+        spo2Config += B00100000; // LSB Size 15.63pA, Full Scale 4096nA
         break;
       case 8192:
-        spo2_config += B01000000; // LSB Size 31.25pA, Full Scale 8192nA
+        spo2Config += B01000000; // LSB Size 31.25pA, Full Scale 8192nA
         break;
       case 16384:
-        spo2_config += B01100000; // LSB Size 62.5pA, Full Scale 16384nA
+        spo2Config += B01100000; // LSB Size 62.5pA, Full Scale 16384nA
         break;
       default:
-        spo2_config += B00100000; // Default LSB Size 15.63pA, Full Scale 4096nA
+        spo2Config += B00100000; // Default LSB Size 15.63pA, Full Scale 4096nA
         break;
     }
   }
@@ -286,31 +264,31 @@ namespace MAX30101{
   void MAX30101::Initialiser::SPO2SampRate(uint16_t value){
     switch (value){
       case 50:
-        spo2_config += B00000000; // 50Hz (50 Samples per second)
+        spo2Config += B00000000; // 50Hz (50 Samples per second)
         break;
       case 100:
-        spo2_config += B00000100; // 100Hz (100 Samples per second)
+        spo2Config += B00000100; // 100Hz (100 Samples per second)
         break;
       case 200:
-        spo2_config += B00001000; // 200Hz (200 Samples per second)
+        spo2Config += B00001000; // 200Hz (200 Samples per second)
         break;
       case 400:
-        spo2_config += B00001100; // 400Hz (400 Samples per second)
+        spo2Config += B00001100; // 400Hz (400 Samples per second)
         break;
       case 800:
-        spo2_config += B00010000; // 800Hz (800 Samples per second)
+        spo2Config += B00010000; // 800Hz (800 Samples per second)
         break;
       case 1000:
-        spo2_config += B00010100; // 1000Hz (1000 Samples per second)
+        spo2Config += B00010100; // 1000Hz (1000 Samples per second)
         break;
       case 1600:
-        spo2_config += B00011000; // 1500Hz (1600 Samples per second)
+        spo2Config += B00011000; // 1500Hz (1600 Samples per second)
         break;
       case 3200:
-        spo2_config += B00011100; // 3200Hz (3200 Samples per second)
+        spo2Config += B00011100; // 3200Hz (3200 Samples per second)
         break;
       default:
-        spo2_config += B00000100; // 100Hz (100 Samples per second)
+        spo2Config += B00000100; // 100Hz (100 Samples per second)
         break;
     }
   }
@@ -331,19 +309,19 @@ namespace MAX30101{
   void MAX30101::Initialiser::LEDPulseWidth(uint16_t value){
     switch (value) {
       case 15:
-        spo2_config += B00000000; // 15 bits ADC Resolution with a pulse width of 69µs
+        spo2Config += B00000000; // 15 bits ADC Resolution with a pulse width of 69µs
         break;
       case 16:
-        spo2_config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
+        spo2Config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
         break;
       case 17:
-        spo2_config += B00000010; // 17 bits ADC Resolution with a pulse width of 215µs
+        spo2Config += B00000010; // 17 bits ADC Resolution with a pulse width of 215µs
         break;
       case 18:
-        spo2_config += B00000011; // 18 bits ADC Resolution with a pulse width of 411µs
+        spo2Config += B00000011; // 18 bits ADC Resolution with a pulse width of 411µs
         break;
       default:
-        spo2_config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
+        spo2Config += B00000001; // 16 bits ADC Resolution with a pulse width of 118µs
         break;
     }
   }
@@ -359,7 +337,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot1(char* slot1){
-    mlslot1 = led_mode_values(slot1);
+    mlSlot1 = led_mode_values(slot1);
   }
 
   /*
@@ -373,7 +351,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot2(char* slot2){
-    mlslot2 = led_mode_values(slot2);
+    mlSlot2 = led_mode_values(slot2);
   }
 
   /*
@@ -387,7 +365,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot3(char* slot3){
-    mlslot3 = led_mode_values(slot3);
+    mlSlot3 = led_mode_values(slot3);
   }
 
   /*
@@ -401,7 +379,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot4(char* slot4){
-    mlslot4 = led_mode_values(slot4);
+    mlSlot4 = led_mode_values(slot4);
   }
 
   /*
@@ -412,7 +390,7 @@ namespace MAX30101{
   * - void
   */
   void MAX30101::Initialiser::LEDAmplitudeRED(uint8_t value){
-    led_pa_red = value / 0.2;
+    ledPulseAmpRed = value / 0.2;
   }
 
   /*
@@ -423,7 +401,7 @@ namespace MAX30101{
   * - void
   */
   void MAX30101::Initialiser::LEDAmplitudeIR(uint8_t value){
-    led_pa_ir = value / 0.2;
+    ledPulseAmpIR = value / 0.2;
   }
 
   /*
@@ -434,7 +412,7 @@ namespace MAX30101{
   * - void
   */
   void MAX30101::Initialiser::LEDAmplitudeGREEN1(uint8_t value){
-    led_pa_green1 = value / 0.2;
+    ledPulseAmpGreen1 = value / 0.2;
   }
 
   /*
@@ -445,7 +423,7 @@ namespace MAX30101{
   * - void
   */
   void MAX30101::Initialiser::LEDAmplitudeGREEN2(uint8_t value){
-    led_pa_green2 = value / 0.2;
+    ledPulseAmpGreen2 = value / 0.2;
   }
 
   /*
@@ -456,40 +434,7 @@ namespace MAX30101{
   * - void
   */
   void MAX30101::Initialiser::LEDAmplitudePilot(uint8_t value){
-    led_pa_pilot = value / 0.2;
-  }
-
-  /*
-  * Returns the FIFOConfig value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::FIFOConfig(){
-    return fifo_config;
-  }
-
-  /*
-  * Returns the ModeControl value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::ModeControl(){
-    return mode_ctrl;
-  }
-
-  /*
-  * Returns the SPO2Config value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::SPO2Config(){
-    return spo2_config;
+    ledPulseAmpPilot = value / 0.2;
   }
 
   /*
@@ -500,10 +445,10 @@ namespace MAX30101{
   * - byte
   */
   byte MAX30101::Initialiser::MultiLEDCtrl1(){
-    byte multiLEDCtrl1 = mlslot1;
+    byte multiLEDCtrl1 = mlSlot1;
     
     // Add in the LED mode for the second slot
-    multiLEDCtrl1 += mlslot2 << 4;
+    multiLEDCtrl1 += mlSlot2 << 4;
 
     return multiLEDCtrl1;
   }
@@ -516,67 +461,12 @@ namespace MAX30101{
   * - byte
   */
   byte MAX30101::Initialiser::MultiLEDCtrl2(){
-    byte multiLEDCtrl2 = mlslot3;
+    byte multiLEDCtrl2 = mlSlot3;
     
     // Add in the LED mode for the second slot
-    multiLEDCtrl2 += mlslot4 << 4;
+    multiLEDCtrl2 += mlSlot4 << 4;
 
     return multiLEDCtrl2;
-  }
-
-  /*
-  * Returns the LEDAmplitudeRED value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::LEDAmplitudeRED(){
-    return led_pa_red;
-  }
-
-  /*
-  * Returns the LEDAmplitudeIR value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::LEDAmplitudeIR(){
-    return led_pa_ir;
-  }
-
-    /*
-  * Returns the LEDAmplitudeGREEN1 value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::LEDAmplitudeGREEN1(){
-    return led_pa_green1;
-  }
-
-  /*
-  * Returns the LEDAmplitudeGREEN2 value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::LEDAmplitudeGREEN2(){
-    return led_pa_green2;
-  }
-
-  /*
-  * Returns the LEDAmplitudePilot value for MAX30101 initialisation
-  * Parameters:
-  * - none
-  * Return value:
-  * - byte
-  */
-  byte MAX30101::Initialiser::LEDAmplitudePilot(){
-    return led_pa_pilot;
   }
 
   /*
@@ -589,28 +479,28 @@ namespace MAX30101{
   uint8_t MAX30101::Initialiser::SlotsInUse(){ // Required so that we know how much data to collect
     uint8_t slotsInUse = 0;
 
-    if (mode_ctrl == MODE_HR){ // HR Mode: Only one slot is in use (Slot1: RED)
+    if (modeCtrl == MODE_HR){ // HR Mode: Only one slot is in use (Slot1: RED)
       slotsInUse = 1;
     }
 
-    if (mode_ctrl == MODE_SPO2){ // SPO2 Mode: Two slots are in use (Slot1: RED, Slot2: IR)
+    if (modeCtrl == MODE_SPO2){ // SPO2 Mode: Two slots are in use (Slot1: RED, Slot2: IR)
       slotsInUse = 2;
     }
 
-    if (mode_ctrl == MODE_MULTI){ // Multi Mode: Multi can be different configuration, so needs to be calculated
-      if (mlslot1 != ML_DISABLED){
+    if (modeCtrl == MODE_MULTI){ // Multi Mode: Multi can be different configuration, so needs to be calculated
+      if (mlSlot1 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot2 != ML_DISABLED){
+      if (mlSlot2 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot3 != ML_DISABLED){
+      if (mlSlot3 != ML_DISABLED){
         slotsInUse ++;
       }
 
-      if (mlslot4 != ML_DISABLED){
+      if (mlSlot4 != ML_DISABLED){
         slotsInUse ++;
       }
     }
@@ -758,7 +648,7 @@ namespace MAX30101{
     MAX30101::read_reg(REG_PART_ID, &partid);
     if(partid!=0x15)
       return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.ModeControl())) // Values calculated from constants passed to the function (MODE_CTRL)
+    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.modeCtrl)) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
     if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, initOptions.MultiLEDCtrl1()))
       return false;
@@ -770,9 +660,9 @@ namespace MAX30101{
       return false;
     if(!MAX30101::write_reg(REG_FIFO_RD_PTR, 0x00)) //FIFO_RD_PRT[4:0] - Clearing the read pointer
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_CONFIG, initOptions.FIFOConfig())) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
+    if(!MAX30101::write_reg(REG_FIFO_CONFIG, initOptions.fifoConfig)) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
       return false;
-    if(!MAX30101::write_reg(REG_SPO2_CONFIG, initOptions.SPO2Config())) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
+    if(!MAX30101::write_reg(REG_SPO2_CONFIG, initOptions.spo2Config)) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
       return false;
     /*if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
@@ -782,21 +672,21 @@ namespace MAX30101{
     //  return false;
     //if(!MAX30101::write_reg(REG_LED4_PA, 0x24)) // Choose value for ~ 7mA for LED2
     //  return false;
-    if(!MAX30101::write_reg(REG_LED1_PA, initOptions.LEDAmplitudeRED())) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
+    if(!MAX30101::write_reg(REG_LED1_PA, initOptions.ledPulseAmpRed)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
-    if(!MAX30101::write_reg(REG_LED2_PA, initOptions.LEDAmplitudeIR())) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::write_reg(REG_LED2_PA, initOptions.ledPulseAmpIR)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED3_PA, initOptions.LEDAmplitudeGREEN1())) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::write_reg(REG_LED3_PA, initOptions.ledPulseAmpGreen1)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED4_PA, initOptions.LEDAmplitudeGREEN2())) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::write_reg(REG_LED4_PA, initOptions.ledPulseAmpGreen2)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_PILOT_PA, initOptions.LEDAmplitudePilot())) // Choose value for ~ 25mA for Pilot LED
+    if(!MAX30101::write_reg(REG_PILOT_PA, initOptions.ledPulseAmpPilot)) // Choose value for ~ 25mA for Pilot LED
       return false;
     if(!MAX30101::write_reg(REG_PROX_INT_THRESH, 0x02))
       return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_1, initOptions.InterruptEnabled1())) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed -GL
+    if(!MAX30101::write_reg(REG_INTR_ENABLE_1, initOptions.intEnable1)) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed -GL
       return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_2, initOptions.InterruptEnabled2()))  // Should Interrupt on Temp Conversion -GL
+    if(!MAX30101::write_reg(REG_INTR_ENABLE_2, initOptions.intEnable2))  // Should Interrupt on Temp Conversion -GL
       return false;
     slotsInUse = initOptions.SlotsInUse();
     return true; // You were missing this and hence made the function less useful! -GL
