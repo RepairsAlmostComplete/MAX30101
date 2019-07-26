@@ -677,7 +677,7 @@ The number of data available in the buffer is calculated from the read and write
 dataCounter.dataAval;
 ```
 For example:
-```
+```arduino
 uint8_t dataAvailable = dataCounter.dataAval;
 ```
 
@@ -713,10 +713,9 @@ dataBuf.ReadData();
 Depending on the configuration of *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)*, there may be one data point per read, or four data points per read. These are seperated into slot1 to slot4. For example if *[Mode Control](#mode-control)* is configured for *HR*, only one slot will be used, and therefore you only need to obtain data from slot1. If *[Mode Control](#mode-control)* is configured for *SpO2*, then two slots will be used, and you will need to obtain data from slot1 (Red) and slot2 (IR). If *[Mode Control](#mode-control)* is configured for *MULTI* mode, then there may be one to four sets of data to collect dependent on how *[Multi LED Slots](#mulit-led-slots)* is configured, in this case you may need to collect data from slot1 to slot4.
 
 To obtain data from the slots, use the following syntax:
-```
+```arduino
 dataBuf.slot1;
 dataBuf.slot2;
 dataBuf.slot3;
 dataBuf.slot4;
 ```
-
