@@ -847,6 +847,8 @@ Before you can obtain the values for the temporal data set, you must first read 
 dataBuf.ReadData();
 ```
 
+[Return to Table of Contents](#table-of-contents)
+
 ### Read a Single Data Point
 Depending on the configuration of *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)*, there may be one data point per read, or four data points per read. These are seperated into slot1 to slot4. For example if *[Mode Control](#mode-control)* is configured for *HR*, only one slot will be used, and therefore you only need to obtain data from slot1. If *[Mode Control](#mode-control)* is configured for *SpO2*, then two slots will be used, and you will need to obtain data from slot1 (Red) and slot2 (IR). If *[Mode Control](#mode-control)* is configured for *MULTI* mode, then there may be one to four sets of data to collect dependent on how *[Multi LED Slots](#mulit-led-slots)* is configured, in this case you may need to collect data from slot1 to slot4.
 
@@ -857,6 +859,8 @@ dataBuf.slot2;
 dataBuf.slot3;
 dataBuf.slot4;
 ```
+
+[Return to Table of Contents](#table-of-contents)
 
 ### Obtaining PPG Data Example
 The following code sniped is an example on how to obtain *PPG Data*.
@@ -876,3 +880,5 @@ void loop(){
     ...
 }
 ```
+
+[Return to Table of Contents](#table-of-contents)
