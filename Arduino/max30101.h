@@ -203,6 +203,8 @@ namespace MAX30101{
     uint32_t slot2;
     uint32_t slot3;
     uint32_t slot4;
+
+    bool ReadData();
   };
 
   void DieTempConvRequest();
@@ -214,7 +216,7 @@ namespace MAX30101{
   bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
   bool Initialise(Initialiser initOptions);
   bool reset();
-  bool ReadData(FIFOData &pun_Data);
+
   byte led_mode_values(char* LED_MODE);
   //uint8_t reg_prox_int_thresh_val(uint8_t prox_int_thresh);
 }

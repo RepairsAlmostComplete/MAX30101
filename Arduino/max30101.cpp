@@ -705,13 +705,13 @@ namespace MAX30101{
   * Return value:
   * - bool [true on success]
   */
-  bool ReadData(MAX30101::FIFOData &pun_Data) // FIFOData passed by reference, rather than pointer
+  bool MAX30101::FIFOData::ReadData() // FIFOData passed by reference, rather than pointer
   {
 
-    pun_Data.slot1 = 0;
-    pun_Data.slot2 = 0;
-    pun_Data.slot3 = 0;
-    pun_Data.slot4 = 0;
+    slot1 = 0;
+    slot2 = 0;
+    slot3 = 0;
+    slot4 = 0;
 
     Wire.beginTransmission(I2C_WRITE_ADDR);
     if(!Wire.write(byte(REG_FIFO_DATA)))
@@ -721,16 +721,16 @@ namespace MAX30101{
       return false;
 
     if (slotsInUse > 0){ // Read data for the first LED slot
-      pun_Data.slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      slot1 |= (((Wire.read() &0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     if (slotsInUse > 1){ // Read data for the second LED slot
-      pun_Data.slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
+      slot2 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read()); // Compact notation for the above and below block, clearer and saves space. -GL
     }
     if (slotsInUse > 2){ // Read data for the third LED slot
-      pun_Data.slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      slot3 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     if (slotsInUse > 3){ // Read data for the fourth LED slot
-      pun_Data.slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
+      slot4 |= (((Wire.read()&0x03) << 16) | (Wire.read() << 8) | Wire.read());
     }
     
     Wire.endTransmission();

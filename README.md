@@ -82,13 +82,13 @@ Driver Library for Arduino and Simplelink Microcontrollers
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Requesting the DataCounters](#requesting-the-datacounters)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Write Pointer](#retreiving-the-write-pointer)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Write Pointer](#Retrieving-the-write-pointer)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Read Pointer](#retreiving-the-read-pointer)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Read Pointer](#Retrieving-the-read-pointer)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Overflow Counter](#retreiving-the-overflow-counter)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Overflow Counter](#Retrieving-the-overflow-counter)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retreiving the Number of Data Available in the Buffer](#retreiving-the-number-of-data-available-in-the-buffer)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Retrieving the Number of Data Available in the Buffer](#Retrieving-the-number-of-data-available-in-the-buffer)
 
 ## The MAX30101 PPG Sensor
 The MAX30101 sensor is produced by Maxim Integrated and is designed in biomedical applications for the detection of heart rate and blood oxygen saturation (SpO2).
@@ -610,7 +610,7 @@ if (interruptStatus.DieTempReady()){
 [Return to Table of Contents](#table-of-contents)
 
 ## Data Counters
-The data counter object is used to retrieve the *[write pointer](#retreiving-the-write-pointer)*, the *[read pointer](#retreiving-the-read-pointer)*, the *[overflow counter](#retreiving-the-overflow-counter)* and the *[data available](#retreiving-the-number-of-data-available-in-the-buffer)*.
+The data counter object is used to retrieve the *[write pointer](#Retrieving-the-write-pointer)*, the *[read pointer](#Retrieving-the-read-pointer)*, the *[overflow counter](#Retrieving-the-overflow-counter)* and the *[data available](#Retrieving-the-number-of-data-available-in-the-buffer)*.
 
 [Return to Table of Contents](#table-of-contents)
 
@@ -635,7 +635,7 @@ dataCounter.Request();
 
 [Return to Table of Contents](#table-of-contents)
 
-### Retreiving the Write Pointer
+### Retrieving the Write Pointer
 The write pointer contains a value indicating the next available position in the buffer where data will be written to. To read the write pointer value use the following syntax.
 ```
 dataCounter.writePtr;
@@ -647,7 +647,7 @@ uint8_t writePointer = dataCounter.writePtr;
 
 [Return to Table of Contents](#table-of-contents)
 
-### Retreiving the Read Pointer
+### Retrieving the Read Pointer
 The read pointer contains a value indicating the current read postition in the buffer. To read the read pointer value use the following syntax.
 ```
 dataCounter.readPtr;
@@ -659,7 +659,7 @@ uint8_t readPointer = dataCounter.readPtr;
 
 [Return to Table of Contents](#table-of-contents)
 
-### Retreiving the Overflow Counter
+### Retrieving the Overflow Counter
 The overflow counter indicates how many datapoints have been dropped due to the buffer being full. To read the overflow counter value use the following syntax.
 ```
 dataCounter.overflowCtr;
@@ -671,7 +671,7 @@ uint8_t overflowCounter = dataCoutner.overflowCtr;
 
 [Return to Table of Contents](#table-of-contents)
 
-### Retreiving the Number of Data Available in the Buffer
+### Retrieving the Number of Data Available in the Buffer
 The number of data available in the buffer is calculated from the read and write pointers. The struct performs this calculation each time there is a *[request to collect the data counters](#requesting-the-datacounters)*. To read the number of data available in the buffer us the following syntax.
 ```
 dataCounter.dataAval;
@@ -684,6 +684,23 @@ uint8_t dataAvailable = dataCounter.dataAval;
 [Return to Table of Contents](#table-of-contents)
 
 ## Obtaining PPG Data
+The data buffer can hold 32 samples, however each of these samples holds the data from a single LED slot. Depending on the *[Mode Control](#mode-control)* selected, the number of slots utilised for one temporal data set will change, and hence the number of temporal data sets that the buffer can hold will change. If in *HR* mode for example, the buffer can store 32 temporal data points, however, if in *MULTI* mode with all four *[Multi LED Slots](#mulit-led-slots)* in use, the buffer can only store 8 temporal data sets. However, the handling of this is take care by the driver which will automatically obtain the right number of samples per request depending on the *[Mode Control](#mode-control)* and *[Multi LED Slots](#mulit-led-slots)* configuration.
 
+Before you can obtain the PPG data, you first need to determine if there is data avilable to read. This can be achieved in two ways, *[checking the interrupt status](#check-interrupt-status]* or *[Retrieving the number of samples available in the buffer](#Retrieving-the-number-of-data-available-in-the-buffer)*. Once we have determined that samples are available in the buffer, we can read the data in the buffer.
 
 [Return to Table of Contents](#table-of-contents)
+
+### The FIFOData Object
+The *FIFOData* object is used to read the PPG data and for retrieval of that data. To create an *FIFOData* object use the following syntax.
+```
+MAX30101::FIFOData ObjectName;
+```
+For example:
+```
+MAX30101::FIFOData ledDataBuf;
+```
+Note: Further examples in this document will assume the FIFO object is named ledDataBuf;
+
+[Return to Table of Contents](#table-of-contents)
+
+### Read the PPG Data

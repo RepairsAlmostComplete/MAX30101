@@ -110,7 +110,7 @@ void loop()
     uint8_t writePtr;
     uint8_t overflowCtr;
 
-    MAX30101::FIFOData ledDataBuf;
+    MAX30101::FIFOData dataBuff;
 
     MAX30101::DataCounters dataCounters;
     dataCounters.Request();
@@ -134,14 +134,14 @@ void loop()
           }
           outSentence += sampleTime[c];
           outSentence += ",";
-          MAX30101::ReadData(ledDataBuf);
-          outSentence += ledDataBuf.slot1;
+          dataBuff.ReadData();
+          outSentence += dataBuff.slot1;
           outSentence += ",";
-          outSentence += ledDataBuf.slot2;
+          outSentence += dataBuff.slot2;
           outSentence += ",";
-          outSentence += ledDataBuf.slot3;
+          outSentence += dataBuff.slot3;
           outSentence += ",";
-          outSentence += ledDataBuf.slot4;
+          outSentence += dataBuff.slot4;
           outSentence += ",";
           outSentence += overflowCtr;
           outSentence += "\r\n";
