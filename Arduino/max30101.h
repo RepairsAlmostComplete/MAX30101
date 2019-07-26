@@ -210,6 +210,16 @@ namespace MAX30101{
     int32_t GetInt();
   };
 
+  struct DataCounters
+  {
+    uint8_t writePtr;
+    uint8_t readPtr;
+    uint8_t overflowCtr;
+    int8_t dataAval = 0;
+
+    void get();
+  };
+
   /*
   * Struct to store the FIFO data options and pass them back to the calling function
   */

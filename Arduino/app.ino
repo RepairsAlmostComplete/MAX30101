@@ -126,44 +126,52 @@ void loop()
     //uint32_t irLEDBuf;
     //uint32_t greenLEDBuf;
     MAX30101::FIFOData ledDataBuf;
-    uint8_t dataAval;
+    //uint8_t dataAval;
 
     /*MAX30101::read_reg(REG_FIFO_RD_PTR, &readPtr);
       MAX30101::read_reg(REG_FIFO_WR_PTR, &writePtr);
       MAX30101::read_reg(REG_OVF_COUNTER, &overflowCtr);*/
 
-    Wire.beginTransmission(0x57);
+    // Getting how much data is available
+    /*
+    Wire.beginTransmission(I2C_WRITE_ADDR);
     Wire.write(REG_FIFO_WR_PTR);
     Wire.endTransmission();
-    Wire.requestFrom(0x57, 3);
+    Wire.requestFrom(I2C_WRITE_ADDR, 3);
     writePtr = Wire.read();
     overflowCtr = Wire.read();
     readPtr = Wire.read();
     Wire.endTransmission();
+    */
 
-    if (readPtr != writePtr) {
+    MAX30101::DataCounters dataCounters;
+    dataCounters.get();
+    
+    if (dataCounters.readPtr != dataCounters.writePtr) {
       /*outSentence += "PH,";
       outSentence += millis();
       outSentence += ",";
       outSentence += overflowCtr;
       outSentence += ",";*/
+      /*
       if (readPtr < writePtr) {
         dataAval = writePtr - readPtr;
       } else {
         dataAval = 32 - readPtr + writePtr;
       }
+      */
       /*outSentence += dataAval;
       outSentence += "\r\n";*/
       //Serial.print(outSentence);
 
-      if (dataAval == 1 && startLogging[c] == 0){
+      if (dataCounters.dataAval == 1 && startLogging[c] == 0){
         sampleTime[c] = millis();
         startLogging[c] = 1;
       }
 
       // Send data
       if (startLogging[c] == 1){
-        while (dataAval > 0) {
+        while (dataCounters.dataAval > 0) {
           outSentence += "PL,";
           sampleNo[c]++;          
           outSentence += sampleNo[c];
@@ -190,7 +198,7 @@ void loop()
             } else {
             outSentence+="\r\n";
             }*/
-          dataAval--;
+          dataCounters.dataAval--;
         }
       }
       Serial.print(outSentence);

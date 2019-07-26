@@ -747,31 +747,9 @@ namespace MAX30101{
   void MAX30101::DieTempConversion::Request(){
     MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
   }
-  
-  // Old One *** TO BE REMOVED ***
-  void DieTempConvRequest(){
-    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
-  }
 
   // New one
   void MAX30101::DieTempConversion::Retrieve(){
-    uint8_t rawInt;
-    uint8_t rawFrac;
-    
-    MAX30101::read_reg(REG_TEMP_INTR, &rawInt);
-    MAX30101::read_reg(REG_TEMP_FRAC, &rawFrac);
-
-    if (rawInt <= 127){
-      tempInt = rawInt;
-    } else {
-      tempInt = -(256 - rawInt);
-    }
-
-    tempFrac = rawFrac * 625;
-  }
-
-  // Old One *** TO BE REMOVED ***
-  void DieTempConvRetrieve(int8_t &tempInt, uint16_t &tempFrac){
     uint8_t rawInt;
     uint8_t rawFrac;
     
@@ -795,31 +773,8 @@ namespace MAX30101{
     return (tempFloat);
   }
 
-  // Old One *** TO BE REMOVED ***
-  float DieTempConvRetrieveFloat(){
-    int8_t tempInt;
-    uint16_t tempFrac;
-
-    MAX30101::DieTempConvRetrieve(tempInt, tempFrac);
-
-    float tempFloat = tempFrac;
-    tempFloat = tempInt + tempFloat / 10000;
-
-    return (tempFloat);
-  }
-
   // New one
   int32_t MAX30101::DieTempConversion::GetInt(){
-    return (tempInt * 10000 + tempFrac);
-  }
-
-  // Old One *** TO BE REMOVED ***
-  int32_t DieTempConvRetrieveInt(){
-    int8_t tempInt;
-    uint16_t tempFrac;
-
-    MAX30101::DieTempConvRetrieve(tempInt, tempFrac);
-
     return (tempInt * 10000 + tempFrac);
   }
 
@@ -830,7 +785,24 @@ namespace MAX30101{
   uint16_t MAX30101::DieTempConversion::GetFrac(){
     return (tempFrac);
   }
-  // *** End of functions for DieTempConversion Class ***
+  // *** End of functions for DataAvaliable Class ***
+  void MAX30101::DataCounters::get(){
+    Wire.beginTransmission(I2C_WRITE_ADDR);
+    Wire.write(REG_FIFO_WR_PTR);
+    Wire.endTransmission();
+    Wire.requestFrom(I2C_WRITE_ADDR, 3);
+    writePtr = Wire.read();
+    overflowCtr = Wire.read();
+    readPtr = Wire.read();
+    Wire.endTransmission();
+
+    if (readPtr < writePtr) {
+        dataAval = writePtr - readPtr;
+      } else {
+        dataAval = 32 - readPtr + writePtr;
+      }
+  }
+  // *** Start of functions for DataAvaliable Class ***
 
   /*
   * Initialise the MAX30101 sensor
