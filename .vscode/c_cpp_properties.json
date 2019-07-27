@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/repairsalmostcomplete/Library/Arduino15/packages/esp32/tools/**",
+                "/Users/repairsalmostcomplete/Library/Arduino15/packages/esp32/hardware/esp32/1.0.2/**",
+                "${workspaceFolder}/**",
+                "/Users/repairsalmostcomplete/Library/Arduino15/packages/esp32/tools/**",
+                "${workspaceFolder}/**",
+                "/Users/repairsalmostcomplete/Library/Arduino15/packages/esp32/hardware/esp32/1.0.2/variants/feather_esp32",
+                "/Users/repairsalmostcomplete/Library/Arduino15/packages/esp32/tools/**"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "forcedInclude": []
+        }
+    ],
+    "version": 4
+}
