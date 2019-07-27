@@ -648,7 +648,9 @@ namespace MAX30101{
     return (tempFrac);
   }
 
-  // *** End of functions for DataAvaliable Class ***
+  // *** End of functions for DieTempConversion Class ***
+
+  // *** Start of functions for DataCounters Class ***
 
   /*
   * Retreive the Data Counters from the sensor
@@ -667,13 +669,14 @@ namespace MAX30101{
     readPtr = Wire.read();
     Wire.endTransmission();
 
-    if (readPtr < writePtr) {
+    if (readPtr <= writePtr) {
         dataAval = writePtr - readPtr;
       } else {
         dataAval = 32 - readPtr + writePtr;
       }
   }
-  // *** Start of functions for DataAvaliable Class ***
+
+  // *** End of functions for DataCounters Class ***
 
   /*
   * Initialise the MAX30101 sensor

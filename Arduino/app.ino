@@ -88,9 +88,6 @@ void loop()
     MAX30101::InterruptStatus interruptStatus;
     interruptStatus.CheckStatus();
 
-    // Output string, need to change this so we are using a printf instead.
-    String outSentence = "";
-
     // Create FIFOData object
     MAX30101::FIFOData dataBuf;
 
@@ -99,51 +96,37 @@ void loop()
     dataCounters.Retrieve();
     
     // If there is data to read, then read data
-    // (rewrite such that we are checking dataAval > 0)
-    if (dataCounters.readPtr != dataCounters.writePtr) {
+    // and send to serial
+    while (dataCounters.dataAval > 0) {
+      // Read Data
+      dataBuf.ReadData();
+      
+      // Get timestamp and increment sample number
+      sampleTime = millis();
+      sampleNo++;
 
-      if (dataCounters.dataAval == 1 && startLogging == 0){
-        sampleTime = millis();
-        startLogging = 1;
-      }
+      // Output to serial
+      Serial.printf("%s,%d,%d,%d,%d,%d,%d\r\n",
+        "PL", sampleNo, sampleTime,
+        dataBuf.slot1, dataBuf.slot2, dataBuf.slot3,
+        dataCounters.overflowCtr);
 
-      // Collect data and send to serial
-      // Convert to printf
-      if (startLogging == 1){
-        while (dataCounters.dataAval > 0) {
-          outSentence += "PL,";
-          sampleNo++;          
-          outSentence += sampleNo;
-          outSentence += ",";
-          if (sampleNo > 1){
-            sampleTime += 10;
-          }
-          outSentence += sampleTime;
-          outSentence += ",";
-          dataBuf.ReadData();
-          outSentence += dataBuf.slot1;
-          outSentence += ",";
-          outSentence += dataBuf.slot2;
-          outSentence += ",";
-          outSentence += dataBuf.slot3;
-          outSentence += ",";
-          outSentence += dataBuf.slot4;
-          outSentence += ",";
-          outSentence += dataCounters.overflowCtr;
-          outSentence += "\r\n";
-
-          dataCounters.dataAval--;
-        }
-      }
-      Serial.print(outSentence);
+      // Decrement the dataAval counter by 1
+      dataCounters.dataAval--;
     }
 
-    // If Die Temperature Conversion available, collect and ouput to serial
+    // If Die Temperature Conversion available, collect and output to serial
     if (interruptStatus.dieTempReady) {
 
+      // Retrieve the Die Temperature
       dieTemp.Retrieve();
-      Serial.printf("T,%d,%F,%d,%d,%d\n", millis(), dieTemp.GetFloat(), dieTemp.GetInt(), dieTemp.GetWhole(), dieTemp.GetFrac());
 
+      // Ouput to serial
+      Serial.printf("T,%d,%F,%d,%d,%d\n",
+        millis(), dieTemp.GetFloat(), dieTemp.GetInt(),
+        dieTemp.GetWhole(), dieTemp.GetFrac());
+
+      // Request a new Die Temperature Conversion
       dieTemp.Request();
     }
 }
