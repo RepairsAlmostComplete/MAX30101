@@ -23,38 +23,29 @@
 #define LED_PA_GREEN2 100 // (51) Sets the Pulse Amplitude (brightness) of the GREEN2 LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
 #define LED_PA_PILOT 255 // (127) Sets the Pulse Amplitude (brightness) of the PILOT LED in mA (0.0mA - 51.0mA in 0.2mA increments) Orig CFG 7.2
 
-#define BIT(n,i) (n>>i&1) // Macro to get a specific bit of an integer
-
-//#define I2C_MULTIPLEX_ADDR 0x70 // MUX I2C Address // Not Required as we are using a single sensor
-#define NRCHAN 8
-// Number of Active Channels
-// #define RSTPIN 0            // Multiplex RST pin
-
-unsigned long lastAnalog; // records last time analog-channel sampled
-
-uint32_t sampleNo[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t sampleTime[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t startLogging[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t analogSampNo = 0;
+uint32_t sampleNo;
+uint32_t sampleTime;
+uint8_t startLogging;
 
 MAX30101::DieTempConversion dieTemp; // Used to store the die temperature
 
 void setup()
 {
+    // Setup serial connection
     Serial.begin(921600);
-    //Serial.begin(256000);
 
+    // Wait for a serial connection to become available
     while(!Serial.available()){
 
     }
 
     //Begin I2C
-    //Wire.begin(5, 4);
     Wire.begin();
     Wire.setClock(400000);
 
     Serial.println();
  
+    // Configure Initialiser Options
     MAX30101::Initialiser initOptions;
     initOptions.IntBuffFull(INTBUFFFULL);
     initOptions.IntPPGReady(INTPPGREADY);
@@ -78,9 +69,6 @@ void setup()
     initOptions.MultiLEDSlot4(MULTI_LED_SLOT4);
     initOptions.LEDAmplitudePilot(LED_PA_PILOT);
 
-    uint8_t a = 15;
-    byte b = a;
-
     // Setup MAX PPG Sensor
     Serial.print("Initialising PPG Sensor.... ");
     while (!MAX30101::Initialise(initOptions)) {
@@ -88,51 +76,49 @@ void setup()
       delay(1000);
     }
 
-    dieTemp.Request(); // Initiate a temperature conversion
+    // Initiate a temperature conversion
+    dieTemp.Request();
+
     Serial.println("Complete");
-
-    // Setup ADC
-    pinMode(A0, INPUT);
-    lastAnalog = millis();
-
 }
 
 void loop()
 {
-    uint8_t data2;
-    int c = 0;
-
+    // Check the interrupt status of the MAX30101
     MAX30101::InterruptStatus interruptStatus;
     interruptStatus.CheckStatus();
 
+    // Output string, need to change this so we are using a printf instead.
     String outSentence = "";
-    uint8_t readPtr;
-    uint8_t writePtr;
-    uint8_t overflowCtr;
 
-    MAX30101::FIFOData dataBuf; // Create FIFO Data Object
+    // Create FIFOData object
+    MAX30101::FIFOData dataBuf;
 
+    // Create DataCounters object and retireve DataCounters
     MAX30101::DataCounters dataCounters;
-    dataCounters.Request();
+    dataCounters.Retrieve();
     
+    // If there is data to read, then read data
+    // (rewrite such that we are checking dataAval > 0)
     if (dataCounters.readPtr != dataCounters.writePtr) {
 
-      if (dataCounters.dataAval == 1 && startLogging[c] == 0){
-        sampleTime[c] = millis();
-        startLogging[c] = 1;
+      if (dataCounters.dataAval == 1 && startLogging == 0){
+        sampleTime = millis();
+        startLogging = 1;
       }
 
-      // Send data
-      if (startLogging[c] == 1){
+      // Collect data and send to serial
+      // Convert to printf
+      if (startLogging == 1){
         while (dataCounters.dataAval > 0) {
           outSentence += "PL,";
-          sampleNo[c]++;          
-          outSentence += sampleNo[c];
+          sampleNo++;          
+          outSentence += sampleNo;
           outSentence += ",";
-          if (sampleNo[c] > 1){
-            sampleTime[c] += 10;
+          if (sampleNo > 1){
+            sampleTime += 10;
           }
-          outSentence += sampleTime[c];
+          outSentence += sampleTime;
           outSentence += ",";
           dataBuf.ReadData();
           outSentence += dataBuf.slot1;
@@ -152,7 +138,8 @@ void loop()
       Serial.print(outSentence);
     }
 
-    if (interruptStatus.dieTempReady) {   // If temperature conversion ended
+    // If Die Temperature Conversion available, collect and ouput to serial
+    if (interruptStatus.dieTempReady) {
 
       dieTemp.Retrieve();
       Serial.printf("T,%d,%F,%d,%d,%d\n", millis(), dieTemp.GetFloat(), dieTemp.GetInt(), dieTemp.GetWhole(), dieTemp.GetFrac());

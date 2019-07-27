@@ -1,11 +1,10 @@
 /*
  * File:   MAX30101.h
- * Author: Repairs Almost Complete
+ * Author: Sally Longmore
  *
- * Created on 11 July 2019, 5:57 PM
+ * Created on 27 July 2019, 8:55z
  */
 
-//#include <arduino.h>
 #include <Wire.h>
 #include "max30101.h"
 
@@ -24,7 +23,7 @@ namespace MAX30101{
   * Return value:
   * - true on success
   */
-  bool write_reg(uint8_t uch_addr, uint8_t uch_data)
+  bool WriteReg(uint8_t uch_addr, uint8_t uch_data)
   {
     Wire.beginTransmission(I2C_WRITE_ADDR);
     int status = Wire.write(byte(uch_addr));
@@ -45,7 +44,7 @@ namespace MAX30101{
   * Return value:
   * - true on success
   */
-  bool read_reg(uint8_t uch_addr, uint8_t *puch_data)
+  bool ReadReg(uint8_t uch_addr, uint8_t *puch_data)
   {
 
       Wire.beginTransmission(I2C_WRITE_ADDR);
@@ -337,7 +336,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot1(char* slot1){
-    mlSlot1 = led_mode_values(slot1);
+    mlSlot1 = LEDModeValues(slot1);
   }
 
   /*
@@ -351,7 +350,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot2(char* slot2){
-    mlSlot2 = led_mode_values(slot2);
+    mlSlot2 = LEDModeValues(slot2);
   }
 
   /*
@@ -365,7 +364,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot3(char* slot3){
-    mlSlot3 = led_mode_values(slot3);
+    mlSlot3 = LEDModeValues(slot3);
   }
 
   /*
@@ -379,7 +378,7 @@ namespace MAX30101{
   * slots should be at the end of available slots.
   */
   void MAX30101::Initialiser::MultiLEDSlot4(char* slot4){
-    mlSlot4 = led_mode_values(slot4);
+    mlSlot4 = LEDModeValues(slot4);
   }
 
   /*
@@ -567,18 +566,30 @@ namespace MAX30101{
 
   // *** Start of functions for DieTempConversion Class ***
 
-  // New one
+  /*
+  * Request a Die Temperature Conversion from the sensor
+  * Parameters:
+  * - none
+  * Return value:
+  * - void
+  */
   void MAX30101::DieTempConversion::Request(){
-    MAX30101::write_reg(REG_TEMP_CONFIG, 0x01);
+    MAX30101::WriteReg(REG_TEMP_CONFIG, 0x01);
   }
 
-  // New one
+  /*
+  * Retreive a Die Temperature Conversion from the sensor
+  * Parameters:
+  * - none
+  * Return value:
+  * - void
+  */
   void MAX30101::DieTempConversion::Retrieve(){
     uint8_t rawInt;
     uint8_t rawFrac;
     
-    MAX30101::read_reg(REG_TEMP_INTR, &rawInt);
-    MAX30101::read_reg(REG_TEMP_FRAC, &rawFrac);
+    MAX30101::ReadReg(REG_TEMP_INTR, &rawInt);
+    MAX30101::ReadReg(REG_TEMP_FRAC, &rawFrac);
 
     if (rawInt <= 127){
       tempInt = rawInt;
@@ -589,7 +600,13 @@ namespace MAX30101{
     tempFrac = rawFrac * 625;
   }
 
-  // New One
+  /*
+  * Returns the Die Temperature as a floating point integer
+  * Parameters:
+  * - none
+  * Return value:
+  * - float
+  */
   float MAX30101::DieTempConversion::GetFloat(){
     float tempFloat = tempFrac;
     tempFloat = tempInt + tempFloat / 10000;
@@ -597,20 +614,50 @@ namespace MAX30101{
     return (tempFloat);
   }
 
-  // New one
+  /*
+  * Returns the Die Temperature as an unsigned integer
+  * shifted by four decimal places (i.e. x10000)
+  * Parameters:
+  * - none
+  * Return value:
+  * - int32_t
+  */
   int32_t MAX30101::DieTempConversion::GetInt(){
     return (tempInt * 10000 + tempFrac);
   }
 
+  /*
+  * Returns the whole number portion of the Die Temperature
+  * Parameters:
+  * - none
+  * Return value:
+  * - int8_t
+  */
   int8_t MAX30101::DieTempConversion::GetWhole(){
     return (tempInt);
   }
 
+  /*
+  * Returns the fraction portion of the Die Temperature
+  * Parameters:
+  * - none
+  * Return value:
+  * - uint16_t
+  */
   uint16_t MAX30101::DieTempConversion::GetFrac(){
     return (tempFrac);
   }
+
   // *** End of functions for DataAvaliable Class ***
-  void MAX30101::DataCounters::Request(){
+
+  /*
+  * Retreive the Data Counters from the sensor
+  * Parameters:
+  * - none
+  * Return value:
+  * - void
+  */
+  void MAX30101::DataCounters::Retrieve(){
     Wire.beginTransmission(I2C_WRITE_ADDR);
     Wire.write(REG_FIFO_WR_PTR);
     Wire.endTransmission();
@@ -639,61 +686,52 @@ namespace MAX30101{
   bool Initialise(Initialiser initOptions)
   {
     
-    uint8_t partid; // Variable to store part ID check
-    //Wire.begin(); // Setting up the Wire library to begin   - INIT OUTSIDE, or reset for SetClock feature -GL
+    uint8_t partid; // Variable to store part ID check    
 
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, 0x40)) //Reset device
+    if(!MAX30101::WriteReg(REG_MODE_CONFIG, 0x40)) //Reset device
       return false;
       delay(40);
-    MAX30101::read_reg(REG_PART_ID, &partid);
+    MAX30101::ReadReg(REG_PART_ID, &partid);
     if(partid!=0x15)
-      return false; // If wrong device, fail initialising - your code didn't check hence could succeed with nothing connected. -GL
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, initOptions.modeCtrl)) // Values calculated from constants passed to the function (MODE_CTRL)
+      return false; // If wrong device, fail initialising
+    if(!MAX30101::WriteReg(REG_MODE_CONFIG, initOptions.modeCtrl)) // Values calculated from constants passed to the function (MODE_CTRL)
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL1, initOptions.MultiLEDCtrl1()))
+    if(!MAX30101::WriteReg(REG_MULTI_LED_CTRL1, initOptions.MultiLEDCtrl1()))
       return false;
-    if(!MAX30101::write_reg(REG_MULTI_LED_CTRL2, initOptions.MultiLEDCtrl2()))
+    if(!MAX30101::WriteReg(REG_MULTI_LED_CTRL2, initOptions.MultiLEDCtrl2()))
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_WR_PTR, 0x00)) //FIFO_WR_PTR[4:0] - Clearing the write pointer
+    if(!MAX30101::WriteReg(REG_FIFO_WR_PTR, 0x00)) //FIFO_WR_PTR[4:0] - Clearing the write pointer
       return false;
-    if(!MAX30101::write_reg(REG_OVF_COUNTER, 0x00)) //OVF_COUNTER[4:0] - Clearing the overflow counter
+    if(!MAX30101::WriteReg(REG_OVF_COUNTER, 0x00)) //OVF_COUNTER[4:0] - Clearing the overflow counter
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_RD_PTR, 0x00)) //FIFO_RD_PRT[4:0] - Clearing the read pointer
+    if(!MAX30101::WriteReg(REG_FIFO_RD_PTR, 0x00)) //FIFO_RD_PRT[4:0] - Clearing the read pointer
       return false;
-    if(!MAX30101::write_reg(REG_FIFO_CONFIG, initOptions.fifoConfig)) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
+    if(!MAX30101::WriteReg(REG_FIFO_CONFIG, initOptions.fifoConfig)) // Values calculated from constants passed to the function (SMP_AVE, FIFO_ROLLOVER_EN, FIFO_A_FULL)
       return false;
-    if(!MAX30101::write_reg(REG_SPO2_CONFIG, initOptions.spo2Config)) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
+    if(!MAX30101::WriteReg(REG_SPO2_CONFIG, initOptions.spo2Config)) // Values calculated from constants passed to function (SPO2_ADC_RGE, SPO2_SR, LED_PW)
       return false;
-    /*if(!MAX30101::write_reg(REG_LED1_PA, 0x24)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
+    if(!MAX30101::WriteReg(REG_LED1_PA, initOptions.ledPulseAmpRed)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
       return false;
-    if(!MAX30101::write_reg(REG_LED2_PA, 0x24)) // Choose value for ~ 7mA for LED2
-      return false;*/
-    //if(!MAX30101::write_reg(REG_LED3_PA, 0x24)) // Choose value for ~ 7mA for LED2
-    //  return false;
-    //if(!MAX30101::write_reg(REG_LED4_PA, 0x24)) // Choose value for ~ 7mA for LED2
-    //  return false;
-    if(!MAX30101::write_reg(REG_LED1_PA, initOptions.ledPulseAmpRed)) // Choose value for ~ 7mA for LED1 (0xFF for 50mA)
+    if(!MAX30101::WriteReg(REG_LED2_PA, initOptions.ledPulseAmpIR)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED2_PA, initOptions.ledPulseAmpIR)) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::WriteReg(REG_LED3_PA, initOptions.ledPulseAmpGreen1)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED3_PA, initOptions.ledPulseAmpGreen1)) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::WriteReg(REG_LED4_PA, initOptions.ledPulseAmpGreen2)) // Choose value for ~ 7mA for LED2
       return false;
-    if(!MAX30101::write_reg(REG_LED4_PA, initOptions.ledPulseAmpGreen2)) // Choose value for ~ 7mA for LED2
+    if(!MAX30101::WriteReg(REG_PILOT_PA, initOptions.ledPulseAmpPilot)) // Choose value for ~ 25mA for Pilot LED
       return false;
-    if(!MAX30101::write_reg(REG_PILOT_PA, initOptions.ledPulseAmpPilot)) // Choose value for ~ 25mA for Pilot LED
+    if(!MAX30101::WriteReg(REG_PROX_INT_THRESH, 0x02))
       return false;
-    if(!MAX30101::write_reg(REG_PROX_INT_THRESH, 0x02))
+    if(!MAX30101::WriteReg(REG_INTR_ENABLE_1, initOptions.intEnable1)) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed
       return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_1, initOptions.intEnable1)) //0xc0)) // Intr Setting Enabled for New Sample & Order Changed -GL
-      return false;
-    if(!MAX30101::write_reg(REG_INTR_ENABLE_2, initOptions.intEnable2))  // Should Interrupt on Temp Conversion -GL
+    if(!MAX30101::WriteReg(REG_INTR_ENABLE_2, initOptions.intEnable2))  // Should Interrupt on Temp Conversion
       return false;
     slotsInUse = initOptions.SlotsInUse();
-    return true; // You were missing this and hence made the function less useful! -GL
+    return true;
   }
 
   bool reset(){
-    if(!MAX30101::write_reg(REG_MODE_CONFIG, 0x00))
+    if(!MAX30101::WriteReg(REG_MODE_CONFIG, 0x00))
       return false;
     return true;
   }
@@ -746,7 +784,7 @@ namespace MAX30101{
   * Return value:
   * - byte
   */
-  byte led_mode_values(char* LED_MODE){
+  byte LEDModeValues(char* LED_MODE){
     
     if (LED_MODE == "DISABLED"){
       return ML_DISABLED;

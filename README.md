@@ -744,7 +744,7 @@ Note: Futher examples in this document will assume the *DataCounter* object is n
 ### Requesting the DataCounters
 Once the *[DataCounter](#creating-a-datacounter-object)* has been created, you need to request the *data counters*, which reads the data from the sensor. To request the *data conuters* use the following syntax.
 ```C++
-dataCounter.Request();
+dataCounter.Retrieve();
 ```
 
 [Return to Table of Contents](#table-of-contents)

@@ -1,8 +1,8 @@
 /*
  * File:   MAX30101.h
- * Author: meimcounting
+ * Author: Sally Longmore
  *
- * Created on 25 July 2018, 5:57 PM
+ * Created on 27 July 2019, 8:55z
  */
 
 #ifndef MAX30101_H
@@ -65,32 +65,34 @@ namespace MAX30101{
   */
   struct Initialiser
   {
-    byte intEnable1;
-    byte intEnable2;
-    byte fifoConfig;
-    byte modeCtrl;
-    byte spo2Config;
-    byte mlSlot1;
-    byte mlSlot2;
-    byte mlSlot3;
-    byte mlSlot4;
-    byte ledPulseAmpRed;
-    byte ledPulseAmpIR;
-    byte ledPulseAmpGreen1;
-    byte ledPulseAmpGreen2;
-    byte ledPulseAmpPilot;
+    byte intEnable1; // Interrupt Enable 1 register value
+    byte intEnable2; // Interrupt Enable 2 register value
+    byte fifoConfig; // FIFO Configuration register value
+    byte modeCtrl; // Mode Control register value
+    byte spo2Config; // SpO2 Configuration register value
+    byte mlSlot1; // Multi LED Slot 1 value
+    byte mlSlot2; // Multi LED Slot 2 value
+    byte mlSlot3; // Multi LED Slot 3 value
+    byte mlSlot4; // Multi LED Slot 4 value
+    byte ledPulseAmpRed; // LED Pulse Amplitude for the Red LED value
+    byte ledPulseAmpIR; // LED Pulse Amplitude for the IR LED value
+    byte ledPulseAmpGreen1; // LED Pulse Amplitude for the Green No. 1 LED value
+    byte ledPulseAmpGreen2; // LED Pulse Amplitude for the Green No. 2 LED value
+    byte ledPulseAmpPilot; // LED Pulse Amplitude for the Pilot LED value
     
     // <<< Interrupt Enable Registers >>>
     // -- Set the values --
 
     // Enables interrupt flag when data buffer is full
     void IntBuffFull(bool);
+
+    // Enables 
     void IntPPGReady(bool);
     void IntAmbientLight(bool);
     void IntProximity(bool);
     void IntDieTempReady(bool);
 
-    // <<< FIFO Configuration Registers >>>
+    // -- FIFO Configuration Registers --
     
     // Sets the number of samples to average for a single data point
     // Valid values are 1, 2, 4, 8, 16, 32
@@ -107,53 +109,72 @@ namespace MAX30101{
     void FIFOBuffFull(uint8_t);
 
     // -- Mode Configuration Registers --
-    // Set the values
-
+    // Set the mode control
     void ModeControl(char*);
 
     // -- SpO2 Configuration Registers --
-    // Set the values
 
+    // Sets the SpO2 ADC Range
     void SPO2ADCRange(uint16_t);
+
+    // Sets the SpO2 Sample Rate
     void SPO2SampRate(uint16_t);
+
+    // Sets the LED Pulse Width
     void LEDPulseWidth(uint16_t);
 
     // -- LED Pulse Amplitude Registers --
-    // Set the values
-
+    
+    // Sets the LED Amplitude for the Red LED
     void LEDAmplitudeRED(uint8_t);
+
+    // Sets the LED Amplitude for the IR LED
     void LEDAmplitudeIR(uint8_t);
+
+    // Sets the LED Amplitude for the Green No.1 LED
     void LEDAmplitudeGREEN1(uint8_t);
+
+    // Sets the LED Amplitude for the Green No.2 LED
     void LEDAmplitudeGREEN2(uint8_t);
+
+    // Sets the LED Amplitude for the Pilot LED
     void LEDAmplitudePilot(uint8_t);
 
     // -- Multi-LED Mode Control Registers --
-    // Set the values
-
+    
+    // Sets the LED to use Multi LED Slot 1
     void MultiLEDSlot1(char*);
+
+    // Sets the LED to use Multi LED Slot 2
     void MultiLEDSlot2(char*);
+
+    // Sets the LED to use Multi LED Slot 3
     void MultiLEDSlot3(char*);
+
+    // Sets the LED to use Multi LED Slot 4
     void MultiLEDSlot4(char*);
 
     // Return the values
     
+    // Returns the Multi LED Control 1 register value
     byte MultiLEDCtrl1();
+
+    // Returns the Multi LED Control 2 register value
     byte MultiLEDCtrl2();
 
     // Return Multi-LED Slots in Use
-
     uint8_t SlotsInUse();
       
   };
 
   struct InterruptStatus
   {
-    bool fifoAlmostFull;
-    bool fifoDataReady;
-    bool ambientLightOVF;
-    bool proximity;
-    bool powerReady;
-    bool dieTempReady;
+    bool fifoAlmostFull; // FIFO Data Buffer Almost Full flag
+    bool fifoDataReady; // FIFO Data Available flag
+    bool ambientLightOVF; // Ambient Light Affecting Sensor flag
+    bool proximity; // Proximity flag
+    bool powerReady; // Sensor Power Ready flag
+    bool dieTempReady; // Die Temperature Conversion Ready flag
 
     public:
     
@@ -161,37 +182,43 @@ namespace MAX30101{
     // Polling the interrupt status will clear all interrupt flags
     void CheckStatus();
 
-    bool FIFOAlmostFull();
-    bool FIFODataReady();
-    bool AmbientLightOverflow();
-    bool Proximity();
-    bool PowerReady();
-    bool DieTempReady();
   };
 
   class DieTempConversion
   {
-    int8_t tempInt;
-    uint16_t tempFrac;
+    int8_t tempInt; // Holds the whole number of the temperature
+    uint16_t tempFrac; // Holds the fraction number of the temperature
 
     public:
     
+    // Request a Die Temperature Conversion from the sensor
     void Request();
+
+    // Retrieve the Die Temperature from the sensor
     void Retrieve();
+
+    // Return the whole number of the temperature
     int8_t GetWhole();
+
+    // Return the fraction number of the temperature
     uint16_t GetFrac();
+
+    // Return the temperature as a floating point integer
     float GetFloat();
+
+    // Return the temperature as an integer shifted by four decimal places
     int32_t GetInt();
   };
 
   struct DataCounters
   {
-    uint8_t writePtr;
-    uint8_t readPtr;
-    uint8_t overflowCtr;
-    int8_t dataAval = 0;
+    uint8_t writePtr; // Write Pointer - Write position in the data buffer
+    uint8_t readPtr; // Read Pointer - Read position in the data buffer
+    uint8_t overflowCtr; // Overflow Counter - The number of dropped data points
+    int8_t dataAval = 0; // Number of data points available in the buffer to be read
 
-    void Request();
+    // Retrieve the data counters from the sensor
+    void Retrieve();
   };
 
   /*
@@ -199,26 +226,21 @@ namespace MAX30101{
   */
   struct FIFOData
   {
-    uint32_t slot1;
-    uint32_t slot2;
-    uint32_t slot3;
-    uint32_t slot4;
+    uint32_t slot1; // Holds PPG data for the first LED
+    uint32_t slot2; // Holds PPG data for the second LED (if in use)
+    uint32_t slot3; // Holds PPG data for the third LED (if in use)
+    uint32_t slot4; // Holds PPG data for the fourth LED (if in use)
 
+    // Read data from the PPG Data Buffer
     bool ReadData();
   };
 
-  void DieTempConvRequest();
-  void DieTempConvRetrieve(int8_t &tempInt, uint8_t &tempFrac);
-  float DieTempConvRetrieveFloat();
-  int32_t DieTempConvRetrieveInt();
-
-  bool write_reg(uint8_t uch_addr, uint8_t uch_data);
-  bool read_reg(uint8_t uch_addr, uint8_t *puch_data);
+  bool WriteReg(uint8_t uch_addr, uint8_t uch_data);
+  bool ReadReg(uint8_t uch_addr, uint8_t *puch_data);
   bool Initialise(Initialiser initOptions);
-  bool reset();
+  bool Reset();
+  byte LEDModeValues(char* LED_MODE);
 
-  byte led_mode_values(char* LED_MODE);
-  //uint8_t reg_prox_int_thresh_val(uint8_t prox_int_thresh);
 }
 
 #endif /* MAX30101_H */
