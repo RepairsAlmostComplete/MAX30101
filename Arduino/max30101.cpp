@@ -2,7 +2,7 @@
  * File:   MAX30101.h
  * Author: Sally Longmore
  *
- * Created on 27 July 2019, 8:55z
+ * Created on 27 July 2019, 9:50z
  */
 
 #include <Wire.h>
