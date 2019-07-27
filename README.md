@@ -1,4 +1,4 @@
-# **MAX30101 Photoplethymography (PPG) Sensor v0.19**
+# **MAX30101 Photoplethymography (PPG) Sensor v0.21**
 Driver Library for Arduino and Simplelink Microcontrollers
 
 ## Table of Contents
